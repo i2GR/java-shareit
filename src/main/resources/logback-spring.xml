@@ -1,0 +1,41 @@
+<configuration>
+    <!--timestamp key="byTime" datePattern="yyyy-MM-dd'T'HH-mm-ss"/-->
+    <property name="LOGS" value="./logs" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %highlight(%-5level) %logger{36} -- %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="UserLog" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/UserLog.log</file>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} -- %msg%n</pattern>
+        </encoder>
+        <append>false</append>
+    </appender>
+    <appender name="ItemLog" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/ItemLog.log</file>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} -- %msg%n</pattern>
+        </encoder>
+        <append>false</append>
+    </appender>
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+    </root>
+    <logger name ="ru.practicum.shareit.user.UserController" level="debug">
+        <appender-ref ref="UserLog"/>
+    </logger>
+    <logger name ="ru.practicum.shareit.user.UserService" level="debug">
+        <appender-ref ref="UserLog"/>
+    </logger>
+    <logger name ="ru.practicum.shareit.user.InMemoryUserStorage" level="debug">
+        <appender-ref ref="UserLog"/>
+    </logger>
+    <logger name ="ru.practicum.shareit.item" level="debug">
+        <appender-ref ref="ItemLog"/>
+    </logger>
+</configuration>

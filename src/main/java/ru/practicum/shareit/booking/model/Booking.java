@@ -1,23 +1,23 @@
-package ru.practicum.shareit.booking.dto;
+package ru.practicum.shareit.booking.model;
 
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import ru.practicum.shareit.booking.BookingStatus;
-import ru.practicum.shareit.util.IdentifiableDto;
+import ru.practicum.shareit.util.Identifiable;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
- * DTO для класса Booking <p>
+ * Model-класс информации о заспросе вещи <p>
  * ТЗ-13 <p>
- * @implNote expect SP-14 specs for more details
  */
+
 @Data
 @Builder
 @EqualsAndHashCode
-public class BookingDto implements IdentifiableDto {
+public class Booking implements Identifiable {
 
     private Long id;
 
@@ -26,21 +26,26 @@ public class BookingDto implements IdentifiableDto {
 
     @NotNull(message = "booking end time is null")
     private LocalDateTime end;
-
+    /**
+     * создание заказа
+     */
     private LocalDateTime created;
 
     /**
      * идентификатор вещи для шаринга - существующий в ShareIt Item#id
-     * @implNote передача в заголовке HTTP-запроса. уточнение в следующих спринта
      */
+    @NotNull(message = "booking item is null")
     private Long itemId;
 
     /**
      * идентификатор пользователя-заказчика - существующий в ShareIt User#id
-     * @implNote передача в заголовке HTTP-запроса. уточнение в следующих спринтах
      */
+    @NotNull(message = "booker is null")
     private Long bookerId;
 
+    /**
+     * можно предположить статус может меняться во время работы приложения
+     */
     @Builder.Default
-    private BookingStatus status = BookingStatus.WAITING;
+    BookingStatus status = BookingStatus.WAITING;
 }
