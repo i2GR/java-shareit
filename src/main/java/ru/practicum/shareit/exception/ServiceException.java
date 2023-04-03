@@ -11,7 +11,7 @@ public class ServiceException extends RuntimeException {
      * @param message : передается информация об причине исключения
      *                (при наличии, или сообщение исключений классов/методов JAVA)
      */
-    public ServiceException (String message) {
+    public ServiceException(String message) {
         super(message);
     }
 }

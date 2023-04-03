@@ -30,7 +30,7 @@ public class ItemController {
 
     @PostMapping
     public ItemDto postItem(@RequestHeader(value = "X-Sharer-User-Id") Long ownerId, @RequestBody @Valid ItemDto dto) {
-        log.info("[post] item http-request with owner id {}" , ownerId);
+        log.info("[post] item http-request with owner id {}", ownerId);
         Item item = ItemDtoMapper.INSTANCE.fromDto(dto);
         return ItemDtoMapper.INSTANCE.toDto(itemService.addItem(ownerId, item));
     }
@@ -40,6 +40,7 @@ public class ItemController {
         log.info("[patch] item http-request with id {} with owner id {}", itemId, ownerId);
         return ItemDtoMapper.INSTANCE.toDto(itemService.patch(ownerId, itemId, dto));
     }
+
     @GetMapping("/{itemId}")
     public ItemDto getItem(@PathVariable(name = "itemId") Long itemId) {
         log.info("[get] item http-request with id {}", itemId);
@@ -63,7 +64,7 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItems (@RequestParam(name = "text") String query) {
+    public List<ItemDto> searchItems(@RequestParam(name = "text") String query) {
         log.info("Search [get] items http-request of query {}", query);
         return !query.isBlank() ?
                itemService.search(query).stream()

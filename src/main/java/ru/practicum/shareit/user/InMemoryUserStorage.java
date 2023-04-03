@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public class InMemoryUserStorage extends InMemoryStorage<User> implements UserRepository {
 
-    public InMemoryUserStorage(){
+    public InMemoryUserStorage() {
         super("User", new HashSet<>(List.of("email")));
     }
 

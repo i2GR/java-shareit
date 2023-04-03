@@ -36,32 +36,32 @@ public class ItemService implements ItemServing {
     public Item addItem(Long ownerId, Item item) {
         assignItemWithOwner(ownerId, item);
         return itemStorage.create(item).orElseThrow(
-                                                    () -> {log.info("Service error creating Item");
-                                                           throw new StorageErrorException("Service error creating Item");}
+                                                    () -> { log.info("Service error creating Item");
+                                                        throw new StorageErrorException("Service error creating Item"); }
                                                     );
     }
 
     @Override
     public Item patch(Long ownerId, Long itemId, ItemDto dto) {
         Item item = itemStorage.readById(itemId).orElseThrow(
-                                                     () -> {log.info("Service error reading Item#id {}", itemId);
+                                                     () -> { log.info("Service error reading Item#id {}", itemId);
                                                             throw new StorageErrorException(
-                                                            String.format("Service error reading Item#id %d", itemId));}
+                                                            String.format("Service error reading Item#id %d", itemId)); }
                                                      );
         checkModificationAccess(ownerId, item.getOwnerId());
         itemMapper.update(dto, item);
         return itemStorage.update(item).orElseThrow(
-                                                    () -> {log.info("Service error patching Item");
-                                                           throw new StorageErrorException("Service error creating Item");}
-        );
+                                                    () -> { log.info("Service error patching Item");
+                                                       throw new StorageErrorException("Service error creating Item"); }
+                                                    );
     }
 
     @Override
     public Item getById(Long itemId) {
         return itemStorage.readById(itemId).orElseThrow(
-                                                    () -> {log.info("Service error reading Item#id {}", itemId);
+                                                    () -> { log.info("Service error reading Item#id {}", itemId);
                                                            throw new StorageErrorException(
-                                                           String.format("Service error reading Item#id %d", itemId));}
+                                                           String.format("Service error reading Item#id %d", itemId)); }
         );
     }
 
@@ -78,9 +78,10 @@ public class ItemService implements ItemServing {
         //реализация для in-memory репозитория. при работе с БД проверку лучше (и кажется, можно) делать запросом
         checkModificationAccess(ownerId, getById(itemId).getOwnerId());
         return itemStorage.delete(itemId).orElseThrow(
-                                                    () -> {log.info("Service error deleting Item#id {}: null received", itemId);
+                                                    () -> { log.info("Service error deleting Item#id {}: null received",
+                                                            itemId);
                                                         throw new ServiceException(
-                                                        String.format("received null deleting Item#id %d", itemId));}
+                                                        String.format("received null deleting Item#id %d", itemId)); }
         );
     }
 
@@ -115,7 +116,7 @@ public class ItemService implements ItemServing {
     private void checkModificationAccess(Long ownerId, Long itemOwnerId) {
         if (!ownerId.equals(itemOwnerId)) {
             log.info("Error: requesting user not match item owner");
-            throw new ForbiddenException("requesting user not match item owner") ;
+            throw new ForbiddenException("requesting user not match item owner");
         }
     }
 }

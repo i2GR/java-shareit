@@ -37,7 +37,8 @@ public class CommonExceptionHandler {
         errors.addAll(
               exception.getBindingResult().getFieldErrors()
               .stream()
-              .map(e -> new ErrorResponse("error in field: " + e.getField(), "bad value:"+ e.getRejectedValue()))
+              .map(e -> new ErrorResponse("error in field: " + e.getField(),
+                                      "bad value:" + e.getRejectedValue()))
               .collect(Collectors.toList()));
         errors.forEach(e -> log.info(e.getError() + " " + e.getDescription()));
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);

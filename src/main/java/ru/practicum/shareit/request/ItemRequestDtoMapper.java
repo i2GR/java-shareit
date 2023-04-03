@@ -10,8 +10,8 @@ import ru.practicum.shareit.request.model.ItemRequest;
  * ТЗ-13 <p>
  * @implNote expect Sprint add-item-requests for more details
  */
-@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
-        , componentModel = "spring")
+@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        componentModel = "spring")
 public interface ItemRequestDtoMapper {
     ItemRequestDtoMapper INSTANCE = Mappers.getMapper(ItemRequestDtoMapper.class);
 

@@ -25,6 +25,7 @@ public class UserController {
 
     @NonNull
     private final UserService userService;
+
     @PostMapping
     public UserDto postUser(@RequestBody @Valid UserDto dto) {
         log.info("[post] user http-request");

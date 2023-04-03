@@ -26,8 +26,8 @@ public class ReviewDto implements IdentifiableDto {
     private Long bookingId;
 
     @NotNull(message = "Mark value is null")
-    @Min( value = 0, message = "Mark value out of minimum range")
-    @Max( value = 5, message = "Mark value out of maximum range")
+    @Min(value = 0, message = "Mark value out of minimum range")
+    @Max(value = 5, message = "Mark value out of maximum range")
     private Integer mark;
 
     private String message;

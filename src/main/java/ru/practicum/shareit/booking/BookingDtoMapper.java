@@ -10,8 +10,8 @@ import ru.practicum.shareit.booking.model.Booking;
  * ТЗ-13 <p>
  * expect Sprint add-bookings specs for more details
  */
-@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
-        , componentModel = "spring")
+@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        componentModel = "spring")
 public interface BookingDtoMapper {
     BookingDtoMapper INSTANCE = Mappers.getMapper(BookingDtoMapper.class);
 

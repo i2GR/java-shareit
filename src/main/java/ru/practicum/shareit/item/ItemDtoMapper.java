@@ -9,8 +9,8 @@ import ru.practicum.shareit.item.model.Item;
  * Item <=> ItemDto Mapstruct-маппер <p>
  * ТЗ-13
  */
-@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
-        , componentModel = "spring")
+@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        componentModel = "spring")
 public interface ItemDtoMapper {
     ItemDtoMapper INSTANCE = Mappers.getMapper(ItemDtoMapper.class);
 
