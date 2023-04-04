@@ -1,7 +1,6 @@
 package ru.practicum.shareit.common;
 
 import org.junit.jupiter.api.Test;
-import ru.practicum.shareit.exception.StorageErrorException;
 import ru.practicum.shareit.item.InMemoryItemStorage;
 import ru.practicum.shareit.item.model.Item;
 
@@ -53,8 +52,8 @@ class SearchTestOnItemClass {
         Item[] searchQueryOfAnother = storage.findByQuery("another").toArray(Item[]::new);
         Set<Item> searchAnotherSet = new HashSet<>(List.of(searchQueryOfAnother));
 
-        assertThrows(StorageErrorException.class, () -> storage.findByQuery(null));
-        assertThrows(StorageErrorException.class, () -> storage.findByQuery(""));
+        assertEquals(0, storage.findByQuery(null).size());
+        assertEquals(0, storage.findByQuery("").size());
         assertArrayEquals(searchQueryOfItem, searchQueryOfITE);
         assertEquals(3, searchQueryOfItem.length);
         assertEquals(2, searchQueryOfAnother.length);

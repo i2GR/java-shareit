@@ -1,10 +1,10 @@
 package ru.practicum.shareit.user;
 
-import ru.practicum.shareit.util.Repository;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.util.Repository;
 
 /**
- * интерфейс-маркер для in-memory репозитория пользователей <p>
+ * in-memory репозиторий пользователей <p>
  * ТЗ-13 <p>
  * CRUD-операции
  */

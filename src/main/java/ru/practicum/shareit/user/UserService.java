@@ -9,6 +9,9 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static ru.practicum.shareit.util.Constants.SUCCESS_DELETE_MESSAGE;
 
 /**
  * сервис-слой для обработки данных пользователей <p>
@@ -26,16 +29,18 @@ public class UserService implements UserServing {
     private final UserRepository userStorage;
 
     @Override
-    public User addUser(User user) {
-        return userStorage.create(user).orElseThrow(
+    public UserDto addUser(UserDto dto) {
+        User user = UserDtoMapper.INSTANCE.fromDto(dto);
+        User created = userStorage.create(user).orElseThrow(
                                                     () -> {
                                                         log.info("Service error creating User");
                                                         throw new StorageErrorException("Service error creating User"); }
                                                     );
+        return UserDtoMapper.INSTANCE.toDto(created);
     }
 
     @Override
-    public User patch(Long userId, UserDto dto) {
+    public UserDto patch(Long userId, UserDto dto) {
         User user = userStorage.readById(userId).orElseThrow(
                                                      () -> {
                                                          log.info("Service error reading User#id {}", userId);
@@ -43,37 +48,42 @@ public class UserService implements UserServing {
                                                          String.format("Service error reading User#id %d", userId)); }
                                                      );
         userMapper.update(dto, user);
-        return userStorage.update(user).orElseThrow(
+        userStorage.update(user).orElseThrow(
                                                     () -> {
                                                         log.info("Service error patching User");
                                                         throw new StorageErrorException("Service error creating User"); }
         );
+        return userMapper.toDto(user);
     }
 
     @Override
-    public User getById(Long userId) {
-        return userStorage.readById(userId).orElseThrow(
+    public UserDto getById(Long userId) {
+        User user = userStorage.readById(userId).orElseThrow(
                                                     () -> {
                                                         log.info("User#id {} not found", userId);
                                                         throw new NotFoundException(
                                                         String.format("User#id %d not found", userId)); }
         );
+        return userMapper.toDto(user);
     }
 
     @Override
-    public List<User> getAll() {
-        return userStorage.readAll();
+    public List<UserDto> getAll() {
+        return userStorage.readAll().stream()
+                          .map(userMapper::toDto)
+                          .collect(Collectors.toList());
     }
 
     @Override
-    public User deleteById(Long userId) {
-        return userStorage.delete(userId).orElseThrow(
+    public String deleteById(Long userId) {
+        userStorage.delete(userId).orElseThrow(
                                                     () -> {
                                                         log.info("Service error deleting User#id {}: null received",
                                                         userId);
                                                         throw new ServiceException(
                                                         String.format("received null deleting User#id %d", userId)); }
         );
+        return SUCCESS_DELETE_MESSAGE;
     }
 
 }

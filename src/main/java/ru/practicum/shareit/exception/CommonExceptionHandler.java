@@ -33,12 +33,12 @@ public class CommonExceptionHandler {
     public ResponseEntity<List<ErrorResponse>> handleMethodArgumentNotValid(MethodArgumentNotValidException exception) {
         log.info("Bad request");
         List<ErrorResponse> errors = new ArrayList<>();
-        errors.add(new ErrorResponse("error", "Invalid request body"));
+        errors.add(new ErrorResponse("Invalid request body", "see list"));
         errors.addAll(
               exception.getBindingResult().getFieldErrors()
               .stream()
               .map(e -> new ErrorResponse("error in field: " + e.getField(),
-                                      "bad value:" + e.getRejectedValue()))
+                                      "bad value: " + e.getDefaultMessage()))
               .collect(Collectors.toList()));
         errors.forEach(e -> log.info(e.getError() + " " + e.getDescription()));
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);

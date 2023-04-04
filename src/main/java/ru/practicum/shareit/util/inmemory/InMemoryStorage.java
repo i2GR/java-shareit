@@ -3,10 +3,10 @@ package ru.practicum.shareit.util.inmemory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
-import ru.practicum.shareit.util.Identifiable;
-import ru.practicum.shareit.util.Repository;
+import ru.practicum.shareit.util.Entity;
 import ru.practicum.shareit.exception.StorageConflictException;
 import ru.practicum.shareit.exception.StorageErrorException;
+import ru.practicum.shareit.util.Repository;
 
 import javax.validation.Valid;
 import java.lang.reflect.Field;
@@ -15,9 +15,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Класс-шаблон для in-memory хранилища <p>
+ * ТЗ-13 <p>
+ * Простая модель "CRUD" <p>
+ * @param <T> указанный экземпляр хранимого класса
+ */
 @Slf4j
 @RequiredArgsConstructor
-public abstract class InMemoryStorage<T extends Identifiable> implements Repository<T> {
+public abstract class InMemoryStorage<T extends Entity> implements Repository<T> {
 
     @NonNull
     private final String loggingEntityName;
@@ -26,49 +32,62 @@ public abstract class InMemoryStorage<T extends Identifiable> implements Reposit
     private final IdService idService = new IdService();
     protected final Map<Long, T> idMapEntity = new HashMap<>();
 
-    @Override
+    /**
+     * Сохранение экземпляра объекта
+     * @param entity экземпляр для сохранения
+     * @return Optional с экземпляром объекта
+     */
     public Optional<T> create(@Valid T entity) {
         log.info("create {} in storage", loggingEntityName);
         Long newId = idService.getNewId(entity);
-        try {
-            if (!idMapEntity.containsValue(entity)) {
-                log.info("{} created with id {}", loggingEntityName, newId);
-                T storedEntity = (T) idService.updateEntityWithId(entity, newId);
-                idMapEntity.put(newId, storedEntity);
-                return Optional.of(storedEntity);
-            }
-        } catch (Throwable e) {
-            log.info("Storage Error creating {}", loggingEntityName);
-            throw new StorageErrorException("Storage Error creating " + loggingEntityName);
+        if (!idMapEntity.containsValue(entity)) {
+            log.info("{} created with id {}", loggingEntityName, newId);
+            idService.updateEntityWithId(entity, newId);
+            idMapEntity.put(newId, entity);
+            return Optional.of(entity);
         }
         log.info("Conflict when creating {}", loggingEntityName);
         throw new StorageConflictException("Conflict when creating " + loggingEntityName);
     }
 
-    @Override
+    /**
+     * Получение объекта из хранилища по идентификатору
+     * @param id присвоенный идентификатор экземпляра объекта модели
+     * @return Optional с экземпляром объекта
+     */
     public Optional<T> readById(Long id) {
         log.info("reading {} by id {}", loggingEntityName, id);
         return Optional.ofNullable(copy(idMapEntity.get(id)));
     }
 
-    @Override
+    /**
+     * Модификация объекта в хранилище
+     * @param entity новый экземпляр объекта модели
+     * @return Optional с экземпляром объекта
+     */
     public Optional<T> update(T entity) {
         Long id = entity.getId();
         log.info("updating {} by id {}", loggingEntityName, id);
-        //return updateWithUniqueValueConstraintCheck(id, entity);
         uniqueValueConstraintCheck(entity);
         return idMapEntity.replace(id, entity) == null ? Optional.empty() : Optional.of(entity);
     }
 
-    @Override
+    /**
+     * Получение списка всех фильмов или пользователей
+     * @return список с хранимыми объектами
+     */
     public List<T> readAll() {
         log.info("reading all {}s", loggingEntityName);
         return idMapEntity.values().stream()
-                                  .sorted(Comparator.comparing(Identifiable::getId))
+                                  .sorted(Comparator.comparing(Entity::getId))
                                   .collect(Collectors.toList());
     }
 
-    @Override
+    /**
+     * Удаление экземпляра из хранилища <p>
+     * @param id идентификатор экземпляра entity для удаления
+     * @return Optional с хранимым объектом
+     */
     public Optional<T> delete(Long id) {
         log.info("deleting {} with id {}", loggingEntityName, id);
         return Optional.ofNullable(idMapEntity.remove(id));
@@ -157,6 +176,5 @@ public abstract class InMemoryStorage<T extends Identifiable> implements Reposit
      * поэтому уже на этапе б) произойдет обновление хранящегося экземпляра. Он будет сразу перезапишется и в HashMap <p>
      * чтобы не менять реализацию паттерна в сервис-слое костыль временно подставлен в реализации хранилищ
      */
-
      protected abstract T copy(T entity);
 }

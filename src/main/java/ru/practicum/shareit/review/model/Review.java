@@ -2,7 +2,8 @@ package ru.practicum.shareit.review.model;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.util.Identifiable;
+import lombok.EqualsAndHashCode;
+import ru.practicum.shareit.util.Entity;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -15,7 +16,8 @@ import java.time.LocalDateTime;
  */
 @Data
 @Builder
-public class Review implements Identifiable {
+@EqualsAndHashCode(callSuper = false)
+public class Review extends Entity {
 
     private Long id;
 

@@ -9,7 +9,8 @@ import ru.practicum.shareit.exception.ServiceException;
 import ru.practicum.shareit.exception.StorageErrorException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.UserRepository;
+import static ru.practicum.shareit.util.Constants.SUCCESS_DELETE_MESSAGE;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,76 +24,88 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemService implements ItemServing {
 
-    @NonNull
     private final ItemDtoMapper itemMapper;
-
-    @NonNull
-    private final UserService userService;
 
     @NonNull
     private final ItemRepository itemStorage;
 
+    @NonNull
+    private final UserRepository userStorage;
+
     @Override
-    public Item addItem(Long ownerId, Item item) {
+    public ItemDto addItem(Long ownerId, ItemDto dto) {
+        Item item = ItemDtoMapper.INSTANCE.fromDto(dto);
         assignItemWithOwner(ownerId, item);
-        return itemStorage.create(item).orElseThrow(
+        Item created = itemStorage.create(item).orElseThrow(
                                                     () -> {
                                                         log.info("Service error creating Item");
                                                         throw new StorageErrorException("Service error creating Item"); }
                                                     );
+        return ItemDtoMapper.INSTANCE.toDto(created);
     }
 
     @Override
-    public Item patch(Long ownerId, Long itemId, ItemDto dto) {
+    public ItemDto patch(Long ownerId, Long itemId, ItemDto dto) {
         Item item = itemStorage.readById(itemId).orElseThrow(
                                                      () -> {
                                                          log.info("Service error reading Item#id {}", itemId);
                                                          throw new StorageErrorException(
                                                          String.format("Service error reading Item#id %d", itemId)); }
                                                      );
-        checkModificationAccess(ownerId, item.getOwnerId());
+        checkUserAccess(ownerId, item.getOwnerId());
         itemMapper.update(dto, item);
-        return itemStorage.update(item).orElseThrow(
+        itemStorage.update(item).orElseThrow(
                                                     () -> {
                                                         log.info("Service error patching Item");
                                                         throw new StorageErrorException("Service error creating Item"); }
                                                     );
+        return itemMapper.toDto(item);
     }
 
     @Override
-    public Item getById(Long itemId) {
-        return itemStorage.readById(itemId).orElseThrow(
+    public ItemDto getById(Long itemId) {
+        Item item = itemStorage.readById(itemId).orElseThrow(
                                                     () -> {
                                                         log.info("Service error reading Item#id {}", itemId);
                                                         throw new StorageErrorException(
                                                         String.format("Service error reading Item#id %d", itemId)); }
         );
+        return itemMapper.toDto(item);
     }
 
     @Override
-    public List<Item> getAllByUserId(Long userId) {
+    public List<ItemDto> getAllByUserId(Long userId) {
         //реализация для in-memory репозитория
         return itemStorage.readAll().stream()
                                     .filter(i -> i.getOwnerId().equals(userId))
+                                    .map(itemMapper::toDto)
                                     .collect(Collectors.toList());
     }
 
     @Override
-    public Item deleteById(Long ownerId, Long itemId) {
-        //реализация для in-memory репозитория. при работе с БД проверку лучше (и кажется, можно) делать запросом
-        checkModificationAccess(ownerId, getById(itemId).getOwnerId());
-        return itemStorage.delete(itemId).orElseThrow(
+    public String deleteById(Long ownerId, Long itemId) {
+        Item item = itemStorage.readById(itemId).orElseThrow(
+                                                    () -> {
+                                                        log.info("Service error reading Item#id {}", itemId);
+                                                        throw new StorageErrorException(
+                                                        String.format("Service error reading Item#id %d", itemId)); }
+        );
+        checkUserAccess(ownerId, item.getOwnerId());
+        itemStorage.delete(itemId).orElseThrow(
                                                     () -> {
                                                         log.info("Service error deleting Item#id {}: null received",
                                                             itemId);
                                                         throw new ServiceException(
                                                         String.format("received null deleting Item#id %d", itemId)); }
         );
+        return SUCCESS_DELETE_MESSAGE;
     }
 
     @Override
-    public List<Item> search(String query) {
-        return itemStorage.findByQuery(query);
+    public List<ItemDto> search(String query) {
+        return itemStorage.findByQuery(query).stream()
+                                            .map(itemMapper::toDto)
+                                            .collect(Collectors.toList());
     }
 
     /**
@@ -105,7 +118,7 @@ public class ItemService implements ItemServing {
      * @param item обрабатываемы в Service-слое Item-объект
      */
     private void assignItemWithOwner(Long ownerId, Item item) {
-        userService.getById(ownerId); //если пользователь не найден -> NotFoundException
+        userStorage.readById(ownerId); //если пользователь не найден -> NotFoundException
         item.setOwnerId(ownerId);
     }
 
@@ -118,10 +131,11 @@ public class ItemService implements ItemServing {
      * @param ownerId идентификатор пользователя владельца
      * @param itemOwnerId идентификатор пользователя-владельца Item-объекта из репозитория
      */
-    private void checkModificationAccess(Long ownerId, Long itemOwnerId) {
+    private void checkUserAccess(Long ownerId, Long itemOwnerId) {
         if (!ownerId.equals(itemOwnerId)) {
             log.info("Error: requesting user not match item owner");
             throw new ForbiddenException("requesting user not match item owner");
         }
     }
+
 }

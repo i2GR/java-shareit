@@ -1,7 +1,6 @@
 package ru.practicum.shareit.common.util.inmemory;
 
 import org.junit.jupiter.api.Test;
-import ru.practicum.shareit.util.Identifiable;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.util.inmemory.IdService;
 
@@ -12,7 +11,7 @@ class IdServiceTest {
     @Test
     void getNewId() {
         IdService idService = new IdService();
-        Identifiable entity = User.builder().email("mail@host.dom").name("name").build();
+        User entity = User.builder().email("mail@host.dom").name("name").build();
         Long newId = idService.getNewId(entity);
         Long sameId = idService.getNewId(entity);
 
@@ -23,10 +22,11 @@ class IdServiceTest {
     @Test
     void updateEntityWithId() {
         IdService idService = new IdService();
-        Identifiable entity = User.builder().email("mail@host.dom").name("name").build();
+        User entity = User.builder().email("mail@host.dom").name("name").build();
         Long expected = idService.getNewId(entity);
 
-        Long actual = idService.updateEntityWithId(entity, expected).getId();
+        idService.updateEntityWithId(entity, expected);
+        Long actual = entity.getId();
 
         assertEquals(expected, actual);
     }

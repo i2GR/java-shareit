@@ -5,12 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
+import static ru.practicum.shareit.util.Constants.SHARER_USER_HTTP_HEADER;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * REST-Контроллер данных о пользователе (User) <p>
@@ -31,45 +29,39 @@ public class ItemController {
     @PostMapping
     public ItemDto postItem(@RequestHeader(value = "X-Sharer-User-Id") Long ownerId, @RequestBody @Valid ItemDto dto) {
         log.info("[post] item http-request with owner id {}", ownerId);
-        Item item = ItemDtoMapper.INSTANCE.fromDto(dto);
-        return ItemDtoMapper.INSTANCE.toDto(itemService.addItem(ownerId, item));
+        return itemService.addItem(ownerId, dto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto patchItem(@RequestHeader(value = "X-Sharer-User-Id") Long ownerId, @PathVariable(name = "itemId") Long itemId, @RequestBody ItemDto dto) {
+    public ItemDto patchItem(@RequestHeader(value = SHARER_USER_HTTP_HEADER) Long ownerId,
+                             @PathVariable(name = "itemId") Long itemId,
+                             @RequestBody ItemDto dto) {
         log.info("[patch] item http-request with id {} with owner id {}", itemId, ownerId);
-        return ItemDtoMapper.INSTANCE.toDto(itemService.patch(ownerId, itemId, dto));
+        return itemService.patch(ownerId, itemId, dto);
     }
 
     @GetMapping("/{itemId}")
     public ItemDto getItem(@PathVariable(name = "itemId") Long itemId) {
         log.info("[get] item http-request with id {}", itemId);
-        return ItemDtoMapper.INSTANCE.toDto(itemService.getById(itemId));
+        return itemService.getById(itemId);
     }
 
     @GetMapping
-    public List<ItemDto> getAllByUserId(@RequestHeader(value = "X-Sharer-User-Id") Long ownerId) {
+    public List<ItemDto> getAllByUserId(@RequestHeader(value = SHARER_USER_HTTP_HEADER) Long ownerId) {
         log.info("[get] all items http-request with userId {}", ownerId);
-        return itemService.getAllByUserId(ownerId).stream()
-                .map(ItemDtoMapper.INSTANCE::toDto)
-                .collect(Collectors.toList());
+        return itemService.getAllByUserId(ownerId);
     }
 
     @DeleteMapping("/{itemId}")
-    public String deleteItem(@RequestHeader(value = "X-Sharer-User-Id") Long ownerId, @PathVariable(name = "itemId") Long itemId) {
+    public String deleteItem(@RequestHeader(value = SHARER_USER_HTTP_HEADER) Long ownerId,
+                             @PathVariable(name = "itemId") Long itemId) {
         log.info("[delete] item http-request with id {} from user id {}", itemId, ownerId);
-        return ItemDtoMapper.INSTANCE.toDto(itemService.deleteById(ownerId, itemId)).getId().equals(itemId)
-               ? "deleted"
-               : "API Delete Error";
+        return itemService.deleteById(ownerId, itemId);
     }
 
     @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestParam(name = "text") String query) {
         log.info("Search [get] items http-request of query {}", query);
-        return !query.isBlank() ?
-               itemService.search(query).stream()
-               .map(ItemDtoMapper.INSTANCE::toDto)
-               .collect(Collectors.toList())
-               : new ArrayList<>();
+        return itemService.search(query);
     }
 }

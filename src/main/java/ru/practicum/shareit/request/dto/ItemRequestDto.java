@@ -1,9 +1,7 @@
 package ru.practicum.shareit.request.dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import ru.practicum.shareit.util.IdentifiableDto;
+import lombok.*;
+import ru.practicum.shareit.util.Entity;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -14,11 +12,12 @@ import java.time.LocalDateTime;
  * ТЗ-13 <p>
  * @implNote expect SP-14 specs for more details
  */
-@Data
+@Getter
 @Builder
-@EqualsAndHashCode(exclude = {"id"})
-public class ItemRequestDto implements IdentifiableDto {
+@EqualsAndHashCode(callSuper = false)
+public class ItemRequestDto extends Entity {
 
+    @Setter
     private Long id;
 
     @NotNull (message = "request description is null")
