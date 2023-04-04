@@ -1,8 +1,9 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
-import lombok.Data;
-import ru.practicum.shareit.util.IdentifiableDto;
+import lombok.Getter;
+import lombok.Setter;
+import ru.practicum.shareit.util.Entity;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -11,9 +12,11 @@ import javax.validation.constraints.NotNull;
  * DTO для класса Item <p>
  * ТЗ-13
  */
-@Data
+@Getter
 @Builder
-public class ItemDto implements IdentifiableDto {
+public class ItemDto extends Entity {
+
+    @Setter
     private Long id;
 
     @NotNull(message = "name cannot be null")

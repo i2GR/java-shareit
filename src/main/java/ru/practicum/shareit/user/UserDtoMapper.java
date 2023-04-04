@@ -12,16 +12,11 @@ import ru.practicum.shareit.user.model.User;
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         componentModel = "spring")
 public interface UserDtoMapper {
+
     UserDtoMapper INSTANCE = Mappers.getMapper(UserDtoMapper.class);
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "email", source = "email")
-    @Mapping(target = "name", source = "name")
     UserDto toDto(User user);
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "email", source = "email")
-    @Mapping(target = "name", source = "name")
     User fromDto(UserDto userDto);
 
     @InheritConfiguration

@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import ru.practicum.shareit.booking.BookingStatus;
-import ru.practicum.shareit.util.Identifiable;
+import ru.practicum.shareit.util.Entity;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-@EqualsAndHashCode
-public class Booking implements Identifiable {
+@EqualsAndHashCode(callSuper = false)
+public class Booking extends Entity {
 
     private Long id;
 

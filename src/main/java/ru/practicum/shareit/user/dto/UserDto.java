@@ -1,21 +1,23 @@
 package ru.practicum.shareit.user.dto;
 
 import lombok.Builder;
-import lombok.Data;
-import ru.practicum.shareit.util.IdentifiableDto;
+import lombok.Getter;
+import lombok.Setter;
+import ru.practicum.shareit.util.Entity;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 /**
- * DTO для класса User
- * <p> ТЗ-13.
+ * DTO для класса User <p>
+ * ТЗ-13
  */
-@Data
+@Getter
 @Builder
-public class UserDto implements IdentifiableDto {
+public class UserDto extends Entity {
 
+    @Setter
     private Long id;
 
     @Email(message = "Bad User.email")

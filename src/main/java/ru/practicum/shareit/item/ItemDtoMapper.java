@@ -14,16 +14,8 @@ import ru.practicum.shareit.item.model.Item;
 public interface ItemDtoMapper {
     ItemDtoMapper INSTANCE = Mappers.getMapper(ItemDtoMapper.class);
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "description", source = "description")
-    @Mapping(target = "available", source = "available")
     ItemDto toDto(Item item);
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "description", source = "description")
-    @Mapping(target = "available", source = "available")
     Item fromDto(ItemDto item);
 
     @InheritConfiguration

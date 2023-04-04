@@ -1,9 +1,7 @@
 package ru.practicum.shareit.review.dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import ru.practicum.shareit.util.IdentifiableDto;
+import lombok.*;
+import ru.practicum.shareit.util.Entity;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -15,11 +13,12 @@ import javax.validation.constraints.NotNull;
  * @implNote expect SP-14 specs for more details
  * @implNote it seems THIS will NOT be necessary
  */
-@Data
+@Getter
 @Builder
-@EqualsAndHashCode
-public class ReviewDto implements IdentifiableDto {
+@EqualsAndHashCode(callSuper = false)
+public class ReviewDto extends Entity {
 
+    @Setter
     private Long id;
 
     @NotNull(message = "booking id is null")

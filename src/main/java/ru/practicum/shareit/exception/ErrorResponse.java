@@ -6,11 +6,11 @@ import lombok.Getter;
 /**
  * класс ответа на HTTP-запрос при выбрасывании исключения на Ендпойнте
  */
+@Getter
 @AllArgsConstructor
 public class ErrorResponse {
 
-    @Getter
     private final String error;
-    @Getter
+
     private final String description;
 }

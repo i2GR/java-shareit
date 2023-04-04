@@ -3,7 +3,7 @@ package ru.practicum.shareit.item.model;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import ru.practicum.shareit.util.Identifiable;
+import ru.practicum.shareit.util.Entity;
 import ru.practicum.shareit.request.model.ItemRequest;
 
 import javax.validation.constraints.NotBlank;
@@ -15,8 +15,8 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 @Builder
-@EqualsAndHashCode(exclude = {"id"})
-public class Item implements Identifiable {
+@EqualsAndHashCode(exclude = {"id"}, callSuper = false)
+public class Item extends Entity {
 
     private Long id;
     /**

@@ -2,10 +2,8 @@ package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.util.Search;
 import ru.practicum.shareit.util.inmemory.InMemoryStorage;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.StorageErrorException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.HashSet;
@@ -14,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
-public class InMemoryItemStorage extends InMemoryStorage<Item> implements ItemRepository, Search<Item> {
+public class InMemoryItemStorage extends InMemoryStorage<Item> implements ItemRepository {
 
     public InMemoryItemStorage() {
         super("Item", new HashSet<>());
@@ -47,11 +45,10 @@ public class InMemoryItemStorage extends InMemoryStorage<Item> implements ItemRe
      * @param query строка поиска
      * @return список объектов, для которых в названии (name) и описании (description) нашлось вхождение строки поиска
      */
-    @Override
     public List<Item> findByQuery(String query) {
         if (query == null || query.isBlank()) {
             log.info("search query is null or blank");
-            throw new StorageErrorException("search query is null or blank");
+            return List.of();
         }
         return idMapEntity.values().stream()
                 .filter(v -> v.getAvailable().equals(Boolean.TRUE))

@@ -13,16 +13,11 @@ import ru.practicum.shareit.request.model.ItemRequest;
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         componentModel = "spring")
 public interface ItemRequestDtoMapper {
+
     ItemRequestDtoMapper INSTANCE = Mappers.getMapper(ItemRequestDtoMapper.class);
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "description", source = "description")
-    @Mapping(target = "created", source = "created")
     ItemRequestDto toDto(ItemRequest itemRequest);
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "description", source = "description")
-    @Mapping(target = "created", source = "created")
     ItemRequest fromDto(ItemRequestDto itemRequest);
 
     @InheritConfiguration

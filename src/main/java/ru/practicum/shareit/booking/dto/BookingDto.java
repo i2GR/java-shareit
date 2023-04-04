@@ -1,10 +1,8 @@
 package ru.practicum.shareit.booking.dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import ru.practicum.shareit.booking.BookingStatus;
-import ru.practicum.shareit.util.IdentifiableDto;
+import ru.practicum.shareit.util.Entity;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -14,11 +12,12 @@ import java.time.LocalDateTime;
  * ТЗ-13 <p>
  * @implNote expect SP-14 specs for more details
  */
-@Data
+@Getter
 @Builder
-@EqualsAndHashCode
-public class BookingDto implements IdentifiableDto {
+@EqualsAndHashCode(callSuper = false)
+public class BookingDto extends Entity {
 
+    @Setter
     private Long id;
 
     @NotNull(message = "booking start time is null")
