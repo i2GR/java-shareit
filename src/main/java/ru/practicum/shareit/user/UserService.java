@@ -30,13 +30,13 @@ public class UserService implements UserServing {
 
     @Override
     public UserDto addUser(UserDto dto) {
-        User user = UserDtoMapper.INSTANCE.fromDto(dto);
+        User user = userMapper.fromDto(dto);
         User created = userStorage.create(user).orElseThrow(
                                                     () -> {
                                                         log.info("Service error creating User");
                                                         throw new StorageErrorException("Service error creating User"); }
                                                     );
-        return UserDtoMapper.INSTANCE.toDto(created);
+        return userMapper.toDto(created);
     }
 
     @Override

@@ -1,18 +1,24 @@
 package ru.practicum.shareit.item;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class ItemDtoMapperTest {
+
+    @Autowired
+    private ItemDtoMapper mapper;
 
     @Test
     void toDto() {
         Item item = Item.builder().id(1L).ownerId(1L).name("item").description("description").available(true).build();
 
-        ItemDto itemDto = ItemDtoMapper.INSTANCE.toDto(item);
+        ItemDto itemDto = mapper.toDto(item);
 
         assertNotNull(itemDto);
         assertEquals("item", itemDto.getName());
@@ -25,7 +31,7 @@ class ItemDtoMapperTest {
     void fromDto() {
         ItemDto itemDto = ItemDto.builder().id(1L).name("item").description("description").available(true).build();
 
-        Item item = ItemDtoMapper.INSTANCE.fromDto(itemDto);
+        Item item = mapper.fromDto(itemDto);
 
         assertNotNull(item);
         assertEquals("item", item.getName());
@@ -71,10 +77,10 @@ class ItemDtoMapperTest {
                 .build();
         ItemDto itemDtoNullValues = ItemDto.builder().build();
 
-        ItemDtoMapper.INSTANCE.update(itemDtoNameOnly, itemToUpdateName);
-        ItemDtoMapper.INSTANCE.update(itemDtoDescriptionOnly, itemToUpdateDescription);
-        ItemDtoMapper.INSTANCE.update(itemDtoDescriptionAndAvailable, itemToUpdateDescriptionAndAvailable);
-        ItemDtoMapper.INSTANCE.update(itemDtoNullValues, itemToUpdateNullValues);
+        mapper.update(itemDtoDescriptionOnly, itemToUpdateDescription);
+        mapper.update(itemDtoDescriptionAndAvailable, itemToUpdateDescriptionAndAvailable);
+        mapper.update(itemDtoNameOnly, itemToUpdateName);
+        mapper.update(itemDtoNullValues, itemToUpdateNullValues);
 
         assertEquals("update item", itemToUpdateName.getName());
         assertEquals("description", itemToUpdateName.getDescription());

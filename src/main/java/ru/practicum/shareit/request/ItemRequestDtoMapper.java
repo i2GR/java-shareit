@@ -1,7 +1,9 @@
 package ru.practicum.shareit.request;
 
-import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.InheritConfiguration;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 
@@ -13,8 +15,6 @@ import ru.practicum.shareit.request.model.ItemRequest;
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         componentModel = "spring")
 public interface ItemRequestDtoMapper {
-
-    ItemRequestDtoMapper INSTANCE = Mappers.getMapper(ItemRequestDtoMapper.class);
 
     ItemRequestDto toDto(ItemRequest itemRequest);
 

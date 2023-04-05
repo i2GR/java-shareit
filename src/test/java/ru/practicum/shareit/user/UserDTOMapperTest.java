@@ -1,18 +1,23 @@
 package ru.practicum.shareit.user;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class UserDTOMapperTest {
 
+    @Autowired
+    private UserDtoMapper mapper;
     @Test
     void toDto() {
         User user = User.builder().id(1L).email("email@host.com").name("name").build();
 
-        UserDto userDto = UserDtoMapper.INSTANCE.toDto(user);
+        UserDto userDto = mapper.toDto(user);
 
         assertNotNull(userDto);
         assertEquals("email@host.com", userDto.getEmail());
@@ -23,7 +28,7 @@ class UserDTOMapperTest {
     void fromDto() {
         UserDto userDto = UserDto.builder().id(1L).email("email@host.dom").name("email@host.dom").build();
 
-        User user = UserDtoMapper.INSTANCE.fromDto(userDto);
+        User user = mapper.fromDto(userDto);
 
         assertNotNull(user);
         assertEquals(1L, user.getId());
@@ -39,8 +44,8 @@ class UserDTOMapperTest {
         UserDto userDtoEmailOnly = UserDto.builder().email("newmail@host.dom").build();
         UserDto userDtoNameOnly = UserDto.builder().name("new name").build();
 
-        UserDtoMapper.INSTANCE.update(userDtoEmailOnly, userToUpdateEmail);
-        UserDtoMapper.INSTANCE.update(userDtoNameOnly, userToUpdateName);
+        mapper.update(userDtoEmailOnly, userToUpdateEmail);
+        mapper.update(userDtoNameOnly, userToUpdateName);
 
 
         assertEquals("newmail@host.dom", userToUpdateEmail.getEmail());

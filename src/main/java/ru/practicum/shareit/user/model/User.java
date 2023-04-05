@@ -1,6 +1,9 @@
 package ru.practicum.shareit.user.model;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.util.Entity;
 
 import javax.validation.constraints.Email;
@@ -10,7 +13,8 @@ import javax.validation.constraints.NotNull;
  * Model-класс информации о пользователе <p>
  * ТЗ-13
  */
-@Data
+@Getter
+@Setter
 @Builder
 @EqualsAndHashCode(exclude = {"id"}, callSuper = false)
 public class User extends Entity {

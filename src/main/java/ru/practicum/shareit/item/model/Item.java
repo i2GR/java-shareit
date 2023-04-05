@@ -1,8 +1,9 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.util.Entity;
 import ru.practicum.shareit.request.model.ItemRequest;
 
@@ -13,7 +14,8 @@ import javax.validation.constraints.NotNull;
  * Model-класс информации о вещи для шаринга <p>
  * ТЗ-13
  */
-@Data
+@Getter
+@Setter
 @Builder
 @EqualsAndHashCode(exclude = {"id"}, callSuper = false)
 public class Item extends Entity {

@@ -1,6 +1,9 @@
 package ru.practicum.shareit.review.dto;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.util.Entity;
 
 import javax.validation.constraints.Max;

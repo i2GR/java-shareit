@@ -34,14 +34,14 @@ public class ItemService implements ItemServing {
 
     @Override
     public ItemDto addItem(Long ownerId, ItemDto dto) {
-        Item item = ItemDtoMapper.INSTANCE.fromDto(dto);
+        Item item = itemMapper.fromDto(dto);
         assignItemWithOwner(ownerId, item);
         Item created = itemStorage.create(item).orElseThrow(
                                                     () -> {
                                                         log.info("Service error creating Item");
                                                         throw new StorageErrorException("Service error creating Item"); }
                                                     );
-        return ItemDtoMapper.INSTANCE.toDto(created);
+        return itemMapper.toDto(created);
     }
 
     @Override
@@ -137,5 +137,4 @@ public class ItemService implements ItemServing {
             throw new ForbiddenException("requesting user not match item owner");
         }
     }
-
 }
