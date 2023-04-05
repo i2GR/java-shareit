@@ -1,8 +1,9 @@
 package ru.practicum.shareit.review.model;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.util.Entity;
 
 import javax.validation.constraints.NotNull;
@@ -14,7 +15,8 @@ import java.time.LocalDateTime;
  * @implNote expect SP-14 specs for more details
  * @implNote it seems THIS will NOT be necessary
  */
-@Data
+@Getter
+@Setter
 @Builder
 @EqualsAndHashCode(callSuper = false)
 public class Review extends Entity {

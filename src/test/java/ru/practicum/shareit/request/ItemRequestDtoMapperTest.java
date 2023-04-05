@@ -2,6 +2,8 @@ package ru.practicum.shareit.request;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
 
@@ -9,9 +11,13 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class ItemRequestDtoMapperTest {
 
     LocalDateTime creationTimeStamp;
+
+    @Autowired
+    private ItemRequestDtoMapper mapper;
 
     @BeforeEach
     void instanceTime() {
@@ -26,7 +32,7 @@ class ItemRequestDtoMapperTest {
                 .created(creationTimeStamp)
                 .created(creationTimeStamp).build();
 
-        ItemRequestDto itemRequestDto = ItemRequestDtoMapper.INSTANCE.toDto(itemRequest);
+        ItemRequestDto itemRequestDto = mapper.toDto(itemRequest);
 
         assertNotNull(itemRequestDto);
         assertEquals("description", itemRequestDto.getDescription());
@@ -41,7 +47,7 @@ class ItemRequestDtoMapperTest {
                 .description("description")
                 .created(creationTimeStamp).build();
 
-        ItemRequest itemRequest = ItemRequestDtoMapper.INSTANCE.fromDto(itemRequestDto);
+        ItemRequest itemRequest = mapper.fromDto(itemRequestDto);
 
         assertNotNull(itemRequest);
         assertEquals("description", itemRequest.getDescription());
@@ -61,8 +67,8 @@ class ItemRequestDtoMapperTest {
         ItemRequestDto itemRequestDtoDescriptionOnly =  ItemRequestDto.builder().description("Description").build();
         ItemRequestDto itemRequestDtoNewTime = ItemRequestDto.builder().created(creationTimeStamp).build();
 
-        ItemRequestDtoMapper.INSTANCE.update(itemRequestDtoDescriptionOnly, requestToUpdateDescription);
-        ItemRequestDtoMapper.INSTANCE.update(itemRequestDtoNewTime, requestToUpdateTime);
+        mapper.update(itemRequestDtoDescriptionOnly, requestToUpdateDescription);
+        mapper.update(itemRequestDtoNewTime, requestToUpdateTime);
 
 
         assertEquals("Description", requestToUpdateDescription.getDescription());

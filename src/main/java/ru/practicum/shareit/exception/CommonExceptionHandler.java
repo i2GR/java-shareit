@@ -9,11 +9,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
-
 /**
  * Обработчик исключений, определененных в ShareIt
  */
@@ -22,28 +17,24 @@ import java.util.stream.Collectors;
 public class CommonExceptionHandler {
 
     /**
-     * метод обработки исключения валидации параметров передаваемых в ендпойнты
+     * обработка исключения валидации параметров передаваемых в ендпойнты (HTTP-код 400)
      * @param exception экземпляр исключения Spring (MethodArgumentNotValidException) ошибки валидации параметров
-     * @return List со списком сообщений об ошибке (ResponseEntity), c указание имени поля и значением из тела запроса,
-     * которые вызвали ошибку
+     * @return сообщение об ошибке (ResponseEntity)
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ResponseEntity<List<ErrorResponse>> handleMethodArgumentNotValid(MethodArgumentNotValidException exception) {
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException exception) {
         log.info("Bad request");
-        List<ErrorResponse> errors = new ArrayList<>();
-        errors.add(new ErrorResponse("Invalid request body", "see list"));
-        errors.addAll(
-              exception.getBindingResult().getFieldErrors()
-              .stream()
-              .map(e -> new ErrorResponse("error in field: " + e.getField(),
-                                      "bad value: " + e.getDefaultMessage()))
-              .collect(Collectors.toList()));
-        errors.forEach(e -> log.info(e.getError() + " " + e.getDescription()));
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        ErrorResponse error = new ErrorResponse("API validation error", "bad request body");
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * обработка исключения ошибки эхранилища с отправкой (HTTP-код 406)
+     * @param exception исключение валидации
+    * @return сообщение об ошибке (ResponseEntity)
+     */
     @ExceptionHandler(StorageErrorException.class)
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
     @ResponseBody
@@ -52,6 +43,11 @@ public class CommonExceptionHandler {
         return new ErrorResponse("Error operating storage", exception.getMessage());
     }
 
+    /**
+     * обработка исключения клонфликта данных в хранилище (HTTP-код 409)
+     * @param exception исключение валидации
+     * @return сообщение об ошибке (ResponseEntity)
+     */
     @ExceptionHandler(StorageConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
@@ -60,17 +56,10 @@ public class CommonExceptionHandler {
         return new ErrorResponse("Conflict ", exception.getMessage());
     }
 
-    @ExceptionHandler(NoSuchElementException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ResponseBody
-    public ErrorResponse handleNoElement(NoSuchElementException exception) {
-        log.warn("Not Found {}", exception.getMessage());
-        return new ErrorResponse("Error operating storage / Not found", exception.getMessage());
-    }
-
     /**
-     * метод обработки исключения при получении непредусмотренных данных в сервис-слое
+     * обработка исключения при получении непредусмотренных данных в сервис-слое (HTTP-код 400)
      * @param exception исключение
+     * @return сообщение об ошибке (ResponseEntity)
      */
     @ExceptionHandler(ServiceException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -81,8 +70,9 @@ public class CommonExceptionHandler {
     }
 
     /**
-     * обработка исключения с отправкой HTTP-кода 404
+     * обработка исключения : запрошенный элемент не найден (HTTP-кода 404)
      * @param exception исключение
+     * @return сообщение об ошибке (ResponseEntity)
      */
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -95,6 +85,7 @@ public class CommonExceptionHandler {
     /**
      * обработка исключения с отправкой HTTP-кода 403
      * @param exception исключение
+     * @return сообщение об ошибке (ResponseEntity)
      */
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)

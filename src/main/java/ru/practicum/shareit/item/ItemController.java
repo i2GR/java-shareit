@@ -27,7 +27,7 @@ public class ItemController {
     private final ItemServing itemService;
 
     @PostMapping
-    public ItemDto postItem(@RequestHeader(value = "X-Sharer-User-Id") Long ownerId, @RequestBody @Valid ItemDto dto) {
+    public ItemDto postItem(@RequestHeader(value = SHARER_USER_HTTP_HEADER) Long ownerId, @RequestBody @Valid ItemDto dto) {
         log.info("[post] item http-request with owner id {}", ownerId);
         return itemService.addItem(ownerId, dto);
     }

@@ -1,8 +1,9 @@
 package ru.practicum.shareit.booking.model;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.util.Entity;
 
@@ -14,7 +15,8 @@ import java.time.LocalDateTime;
  * ТЗ-13 <p>
  */
 
-@Data
+@Getter
+@Setter
 @Builder
 @EqualsAndHashCode(callSuper = false)
 public class Booking extends Entity {

@@ -1,7 +1,9 @@
 package ru.practicum.shareit.user;
 
-import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.InheritConfiguration;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -12,8 +14,6 @@ import ru.practicum.shareit.user.model.User;
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         componentModel = "spring")
 public interface UserDtoMapper {
-
-    UserDtoMapper INSTANCE = Mappers.getMapper(UserDtoMapper.class);
 
     UserDto toDto(User user);
 
