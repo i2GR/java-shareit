@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * TODO Sprint add-bookings.
+ * @implNote expect Sprint add-bookings specs for more details
  */
 @RestController
 @RequestMapping(path = "/bookings")
