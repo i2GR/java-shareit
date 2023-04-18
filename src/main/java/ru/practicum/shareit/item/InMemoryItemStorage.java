@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
-public class InMemoryItemStorage extends InMemoryStorage<Item> implements ItemRepository {
+public class InMemoryItemStorage extends InMemoryStorage<Item> implements InMemoryItemRepository {
 
     public InMemoryItemStorage() {
         super("Item", new HashSet<>());

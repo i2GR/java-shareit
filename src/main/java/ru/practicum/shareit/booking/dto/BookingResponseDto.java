@@ -12,6 +12,9 @@ import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDateTime;
 
 import ru.practicum.shareit.booking.validation.EndDateAfterStartDate;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.booking.model.BookingStatus;
 
 /**
  * DTO для класса сущности запроса на бронирование
@@ -20,9 +23,9 @@ import ru.practicum.shareit.booking.validation.EndDateAfterStartDate;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"id"})
 @EndDateAfterStartDate
-public class BookingDto {
+public class BookingResponseDto {
 
     @Setter
     private Long id;
@@ -33,9 +36,9 @@ public class BookingDto {
     @Future
     private LocalDateTime end;
 
-    /**
-     * идентификатор вещи для шаринга - существующий в ShareIt Item#id
-     * @implNote передача в заголовке HTTP-запроса. уточнение в следующих спринта
-     */
-    private Long itemId;
+    private Item item;
+
+    private User booker;
+
+    private BookingStatus status;
 }

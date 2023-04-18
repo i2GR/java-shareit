@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.shareit.util.Entity;
+import ru.practicum.shareit.util.ShareItEntity;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @EqualsAndHashCode(callSuper = false)
-public class Review extends Entity {
+public class Review extends ShareItEntity {
 
     private Long id;
 

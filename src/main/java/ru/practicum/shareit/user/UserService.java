@@ -31,58 +31,49 @@ public class UserService implements UserServing {
     @Override
     public UserDto addUser(UserDto dto) {
         User user = userMapper.fromDto(dto);
-        User created = userStorage.create(user).orElseThrow(
-                                                    () -> {
-                                                        log.info("Service error creating User");
-                                                        throw new StorageErrorException("Service error creating User"); }
-                                                    );
+        User created = userStorage.save(user);
         return userMapper.toDto(created);
     }
 
     @Override
     public UserDto patch(Long userId, UserDto dto) {
-        User user = userStorage.readById(userId).orElseThrow(
-                                                     () -> {
-                                                         log.info("Service error reading User#id {}", userId);
-                                                         throw new StorageErrorException(
-                                                         String.format("Service error reading User#id %d", userId)); }
-                                                     );
-        userMapper.update(dto, user);
-        userStorage.update(user).orElseThrow(
-                                                    () -> {
-                                                        log.info("Service error patching User");
-                                                        throw new StorageErrorException("Service error creating User"); }
+        User user = userStorage.findById(userId).orElseThrow(
+                () -> {
+                    log.info("Service error reading User#id {}", userId);
+                    throw new StorageErrorException(String.format("Service error reading User#id %d", userId));
+                }
         );
+        userMapper.update(dto, user);
+        userStorage.save(user);
         return userMapper.toDto(user);
     }
 
     @Override
     public UserDto getById(Long userId) {
-        User user = userStorage.readById(userId).orElseThrow(
-                                                    () -> {
-                                                        log.info("User#id {} not found", userId);
-                                                        throw new NotFoundException(
-                                                        String.format("User#id %d not found", userId)); }
+        User user = userStorage.findById(userId).orElseThrow(
+                () -> {
+                    log.info("User#id {} not found", userId);
+                    throw new NotFoundException(String.format("User#id %d not found", userId));
+                }
         );
         return userMapper.toDto(user);
     }
 
     @Override
     public List<UserDto> getAll() {
-        return userStorage.readAll().stream()
+        //TODO limits
+        return userStorage.findAll().stream()
                           .map(userMapper::toDto)
                           .collect(Collectors.toList());
     }
 
     @Override
     public String deleteById(Long userId) {
-        userStorage.delete(userId).orElseThrow(
-                                                    () -> {
-                                                        log.info("Service error deleting User#id {}: null received",
-                                                        userId);
-                                                        throw new ServiceException(
-                                                        String.format("received null deleting User#id %d", userId)); }
-        );
-        return SUCCESS_DELETE_MESSAGE;
+        if (userStorage.existsById(userId)) {
+            userStorage.deleteById(userId);
+            log.info("deleted item with id {}", userId);
+            return SUCCESS_DELETE_MESSAGE;
+        }
+        throw new BadRequestException(String.format("Error deleting User#id %d", userId));
     }
 }

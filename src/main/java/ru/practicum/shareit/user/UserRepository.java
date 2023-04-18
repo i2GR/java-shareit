@@ -1,12 +1,10 @@
 package ru.practicum.shareit.user;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.util.Repository;
 
 /**
- * in-memory репозиторий пользователей <p>
- * ТЗ-13 <p>
- * CRUD-операции
+ * интерфейс для Jpa-репозитория пользователей
  */
-public interface UserRepository extends Repository<User> {
+public interface UserRepository extends JpaRepository<User, Long> {
 }

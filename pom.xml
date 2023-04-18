@@ -14,9 +14,10 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<name>ShareIt</name>
-	<description>Yandex Practicum финальный проект SP13
-		бэкенд для сервиса шеринга, работы с фильмами и оценками пользователей
+	<description>Yandex Practicum финальный проект SP14
+		бэкенд для сервиса шеринга
 		SP13: Каркас Spring приложения. Добавление контроллеров, реализация модели данных (DTO-классы, маппинг)
+		SP14: работа с базой данных, возможность бронировать вещи
 	</description>
 
 	<properties>
@@ -28,6 +29,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<!--version>2.7.2</version-->
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -243,6 +249,22 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-checkstyle-plugin</artifactId>
+						<configuration>
+							<configLocation>checkstyle.xml</configLocation>
+							<encoding>UTF-8</encoding>
+							<consoleOutput>true</consoleOutput>
+							<failsOnError>true</failsOnError>
+							<linkXRef>false</linkXRef>
+						</configuration>
+						<executions>
+							<execution>
+								<id>validate</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
 					</plugin>
 					<plugin>
 						<groupId>com.github.spotbugs</groupId>

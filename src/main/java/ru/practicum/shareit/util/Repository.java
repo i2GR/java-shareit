@@ -7,10 +7,10 @@ import java.util.Optional;
  * Интерфкейс-шаблон для хранилища идентифицируемых объектов модели, имеющих идентификатор <p>
  * ТЗ-13 <p>
  * Предусмаривается простая модель "CRUD" <p>
- * @implNote <u>"идентифицируемый объект"</u> - это экземпляр DTO-класса, реализующий интерфейс {@link Entity} <p>
+ * @implNote <u>"идентифицируемый объект"</u> - это экземпляр DTO-класса, реализующий интерфейс {@link ShareItEntity} <p>
  * @param <T> указанный экземпляр Model-класса, имеющий идентификатора
  */
-public interface Repository<T extends Entity> {
+public interface Repository<T extends ShareItEntity> {
 
     /**
      * Сохранение экземпляра объекта

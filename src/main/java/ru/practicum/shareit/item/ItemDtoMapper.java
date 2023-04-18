@@ -17,7 +17,7 @@ public interface ItemDtoMapper {
 
     ItemDto toDto(Item item);
 
-    Item fromDto(ItemDto item);
+    Item fromDto(ItemDto dto);
 
     @InheritConfiguration
     Item update(ItemDto source, @MappingTarget Item destination);
