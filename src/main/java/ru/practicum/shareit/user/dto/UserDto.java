@@ -1,9 +1,10 @@
 package ru.practicum.shareit.user.dto;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.shareit.util.Entity;
+import ru.practicum.shareit.util.ShareItEntity;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -15,7 +16,8 @@ import javax.validation.constraints.NotNull;
  */
 @Getter
 @Builder
-public class UserDto extends Entity {
+@EqualsAndHashCode(exclude = {"id"}, callSuper = false)
+public class UserDto extends ShareItEntity {
 
     @Setter
     private Long id;

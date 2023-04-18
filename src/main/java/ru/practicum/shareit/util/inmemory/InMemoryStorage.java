@@ -3,7 +3,7 @@ package ru.practicum.shareit.util.inmemory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
-import ru.practicum.shareit.util.Entity;
+import ru.practicum.shareit.util.ShareItEntity;
 import ru.practicum.shareit.exception.StorageConflictException;
 import ru.practicum.shareit.exception.StorageErrorException;
 import ru.practicum.shareit.util.Repository;
@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @RequiredArgsConstructor
-public abstract class InMemoryStorage<T extends Entity> implements Repository<T> {
+public abstract class InMemoryStorage<T extends ShareItEntity> implements Repository<T> {
 
     @NonNull
     private final String loggingEntityName;
@@ -79,7 +79,7 @@ public abstract class InMemoryStorage<T extends Entity> implements Repository<T>
     public List<T> readAll() {
         log.info("reading all {}s", loggingEntityName);
         return idMapEntity.values().stream()
-                                  .sorted(Comparator.comparing(Entity::getId))
+                                  .sorted(Comparator.comparing(ShareItEntity::getId))
                                   .collect(Collectors.toList());
     }
 

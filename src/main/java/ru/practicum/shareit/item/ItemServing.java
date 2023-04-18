@@ -1,11 +1,14 @@
 package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentResponseDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 
 import java.util.List;
 
 /**
- * интерфейс сервис-слой для обработки данных вещах для шаринга <p>
+ * интерфейс сервис-слой для обработки данных о вещах для шаринга <p>
  * ТЗ-13 <p>
  * CRUD-функционал, метод поиска
  */
@@ -33,13 +36,21 @@ public interface ItemServing {
      * @param itemId идентификатор сохраненной вещи
      * @return экз. DTO для вещи из хранилища
      */
-    ItemDto getById(Long itemId);
+    ItemResponseDto getById(Long itemId);
+
+    /**
+     * получение DTO для вещи из хранилища
+     * @param userId идентификатор пользователя, сделавшего Http-запрос
+     * @param itemId идентификатор сохраненной вещи
+     * @return экз. DTO для вещи из хранилища
+     */
+    ItemResponseDto getByOwnerById(Long userId, Long itemId);
 
     /**
      * получение списка DTO для всех вещей из хранилища
      * @return список DTO
      */
-    List<ItemDto> getAllByUserId(Long userId);
+    List<ItemResponseDto> getAllByUserId(Long userId);
 
     /**
      * удаление пользователя из хранилища <p>
@@ -56,4 +67,13 @@ public interface ItemServing {
      * @return список DTO, для которых было найдено совпадение
      */
     List<ItemDto> search(String query);
+
+    /**
+     * Добавление комментария к вещи
+     * @param authorId идентификатор владельца
+     * @param itemId идентификатор вещи для шаринга
+     * @param dto DTO-класс сущности вещи для шаринга
+     * @return DTO-класс сущности вещи для шаринга, с сохраненными данными в приложении
+     */
+    CommentResponseDto addComment(Long authorId, Long itemId, CommentDto dto);
 }

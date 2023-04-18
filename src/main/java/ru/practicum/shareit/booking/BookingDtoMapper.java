@@ -1,10 +1,8 @@
 package ru.practicum.shareit.booking;
 
-import org.mapstruct.InheritConfiguration;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
 
 /**
@@ -16,9 +14,12 @@ import ru.practicum.shareit.booking.model.Booking;
         componentModel = "spring")
 public interface BookingDtoMapper {
 
-    BookingDto toDto(Booking booking);
-
+    @Mapping(target = "status", expression = "java( ru.practicum.shareit.booking.model.BookingStatus.fromString(\"waiting\") )")
+    @Mapping(target = "item", ignore = true)
+    @Mapping(target = "booker", ignore = true)
     Booking fromDto(BookingDto booking);
+
+    BookingResponseDto toDto(Booking booking);
 
     @InheritConfiguration
     Booking update(BookingDto source, @MappingTarget Booking booking);

@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.shareit.util.Entity;
+import ru.practicum.shareit.util.ShareItEntity;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Builder
 @EqualsAndHashCode(callSuper = false)
-public class ReviewDto extends Entity {
+public class ReviewDto extends ShareItEntity {
 
     @Setter
     private Long id;

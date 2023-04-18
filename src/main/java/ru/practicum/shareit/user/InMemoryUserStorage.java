@@ -11,7 +11,7 @@ import java.util.List;
 
 @Slf4j
 @Repository
-public class InMemoryUserStorage extends InMemoryStorage<User> implements UserRepository {
+public class InMemoryUserStorage extends InMemoryStorage<User> implements InMemoryUserRepository {
 
     public InMemoryUserStorage() {
         super("User", new HashSet<>(List.of("email")));
