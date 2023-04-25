@@ -60,27 +60,32 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByItem_OwnerIdOrderByStartDesc(Long ownerId);
 
     /**
-     * получение списка бронирований пользователя-владельца <p>
-     * <b>для ПОИСКА ПОСЛЕДНЕГО бронирования</b> <p>
-     * выборка по времени начала бронирования до текущего момента <p> //TODO
+     * получение <b>ПОСЛЕДНЕГО бронирования</b><p>
+     * выборка по времени начала бронирования до текущего момента <p>
      * сортировка по убыванию времени окончания бронирования
-     * @param ownerId идентификатор пользователя-заказчика
+     * @param itemId идентификатор вещи
      * @param moment текущий момент
-     * @return список (List)
+     * @param statusList статусы бронирования, которые исключаются из поиска
+     * @return информация о бронировании ,соответствующего условиям поиска
      */
-    List<Booking> findByItem_OwnerIdAndStartIsBeforeOrderByEndDesc(Long ownerId, LocalDateTime moment);
+    Optional<Booking> findFirst1ByItemIdAndStartLessThanEqualAndStatusNotInOrderByStartDesc(
+            Long itemId,
+            LocalDateTime moment,
+            List<BookingStatus> statusList);
 
     /**
-     * получение списка бронирований пользователя-владельца <p>
-     * <b>для поиска СЛЕДУЮЩЕГО бронирования</b> <p>
-     * выборка по времени начала бронирования после текущего момента <p> //TODO
+     * получение <b>СЛЕДУЮЩЕГО бронирования</b><p>
+     * выборка по времени начала бронирования после текущего момента <p>
      * сортировка по возрастанию времени окончания бронирования
-     * @param ownerId идентификатор пользователя-заказчика
+     * @param itemId идентификатор вещи
      * @param moment текущий момент
+     * @param statusList статусы бронирования, которые исключаются из поиска
      * @return список (List)
      */
-    //TODO
-    List<Booking> findByItem_OwnerIdAndStartIsAfterOrderByStartAsc(Long ownerId, LocalDateTime moment);
+    Optional<Booking> findFirst1ByItemIdAndStartGreaterThanEqualAndStatusNotInOrderByStartAsc(
+            Long itemId,
+            LocalDateTime moment,
+            List<BookingStatus> statusList);
 
     /**
      * получение списка бронирований пользователя-владельца <p>
@@ -119,7 +124,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     /**
      * получение списка бронирований пользователя-владельца <p>
      * выборка по Статусу <p>
-     * сортировка по убывванию времени начала бронирования //TODO окончания?
+     * сортировка по убывванию времени начала бронирования
      * @param ownerId идентификатор пользователя-заказчика
      * @param status статус для выборки
      * @return список (List)
@@ -153,6 +158,4 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByItem_OwnerIdAndStartIsBeforeAndEndIsAfterOrderByEndDesc(Long ownerId,
                                                                                 LocalDateTime forStart,
                                                                                 LocalDateTime forEnd);
-
-    List<Booking> findAllByItem_OwnerIdAndItemId(Long userId, Long itemId);
 }

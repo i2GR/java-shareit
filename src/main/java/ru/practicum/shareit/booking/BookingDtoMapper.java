@@ -4,6 +4,8 @@ import org.mapstruct.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
 /**
  * Booking <=> BookingDto Mapstruct-маппер <p>
@@ -14,10 +16,8 @@ import ru.practicum.shareit.booking.model.Booking;
         componentModel = "spring")
 public interface BookingDtoMapper {
 
-    @Mapping(target = "status", expression = "java( ru.practicum.shareit.booking.model.BookingStatus.fromString(\"waiting\") )")
-    @Mapping(target = "item", ignore = true)
-    @Mapping(target = "booker", ignore = true)
-    Booking fromDto(BookingDto booking);
+    @Mapping(target = "id", ignore = true)
+    Booking fromDto(BookingDto dto, User booker, Item item);
 
     BookingResponseDto toDto(Booking booking);
 

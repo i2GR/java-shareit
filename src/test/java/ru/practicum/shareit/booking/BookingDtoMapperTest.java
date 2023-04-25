@@ -58,7 +58,7 @@ class BookingDtoMapperTest {
                 .itemId(1L)
                 .build();
         //when
-        Booking booking = mapper.fromDto(bookingDto);
+        Booking booking = mapper.fromDto(bookingDto, booker, item);
         //then
         assertNotNull(booking);
         assertEquals(start, booking.getStart());

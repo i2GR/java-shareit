@@ -2,14 +2,15 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
+import static java.lang.String.format;
 
 import static ru.practicum.shareit.util.Constants.SUCCESS_DELETE_MESSAGE;
 
@@ -22,12 +23,11 @@ import static ru.practicum.shareit.util.Constants.SUCCESS_DELETE_MESSAGE;
 @RequiredArgsConstructor
 public class UserService implements UserServing {
 
-    @NonNull
     private final UserDtoMapper userMapper;
 
-    @NonNull
     private final UserRepository userStorage;
 
+    @Transactional
     @Override
     public UserDto addUser(UserDto dto) {
         User user = userMapper.fromDto(dto);
@@ -35,16 +35,16 @@ public class UserService implements UserServing {
         return userMapper.toDto(created);
     }
 
+    @Transactional
     @Override
     public UserDto patch(Long userId, UserDto dto) {
         User user = userStorage.findById(userId).orElseThrow(
                 () -> {
-                    log.info("Service error reading User#id {}", userId);
-                    throw new StorageErrorException(String.format("Service error reading User#id %d", userId));
+                    log.info("Service error reading User with id {}", userId);
+                    throw new StorageErrorException(format("Service error reading User with id %d", userId));
                 }
         );
         userMapper.update(dto, user);
-        userStorage.save(user);
         return userMapper.toDto(user);
     }
 
@@ -53,7 +53,7 @@ public class UserService implements UserServing {
         User user = userStorage.findById(userId).orElseThrow(
                 () -> {
                     log.info("User#id {} not found", userId);
-                    throw new NotFoundException(String.format("User#id %d not found", userId));
+                    throw new NotFoundException(format("User#id %d not found", userId));
                 }
         );
         return userMapper.toDto(user);
@@ -61,12 +61,12 @@ public class UserService implements UserServing {
 
     @Override
     public List<UserDto> getAll() {
-        //TODO limits
         return userStorage.findAll().stream()
                           .map(userMapper::toDto)
-                          .collect(Collectors.toList());
+                          .collect(toList());
     }
 
+    @Transactional
     @Override
     public String deleteById(Long userId) {
         if (userStorage.existsById(userId)) {
@@ -74,6 +74,6 @@ public class UserService implements UserServing {
             log.info("deleted item with id {}", userId);
             return SUCCESS_DELETE_MESSAGE;
         }
-        throw new BadRequestException(String.format("Error deleting User#id %d", userId));
+        throw new BadRequestException(format("Error deleting User#id %d", userId));
     }
 }

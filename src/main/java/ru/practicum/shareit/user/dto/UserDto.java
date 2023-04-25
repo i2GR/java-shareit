@@ -4,11 +4,10 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.shareit.util.ShareItEntity;
+import ru.practicum.shareit.booking.validation.OnCreate;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 /**
  * DTO для класса User <p>
@@ -17,17 +16,15 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Builder
 @EqualsAndHashCode(exclude = {"id"}, callSuper = false)
-public class UserDto extends ShareItEntity {
+public class UserDto {
 
     @Setter
     private Long id;
 
-    @Email(message = "Bad User.email")
-    @NotEmpty(message = "Email cannot be empty")
-    @NotNull(message = "Email cannot be null")
+    @Email(message = "Bad User.email", groups = {OnCreate.class})
+    @NotEmpty(message = "Email cannot be empty", groups = {OnCreate.class})
     private String email;
 
-    @NotEmpty(message = "name cannot be empty")
-    @NotNull
+    @NotEmpty(message = "name cannot be empty", groups = {OnCreate.class})
     private String name;
 }

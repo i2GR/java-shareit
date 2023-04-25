@@ -6,7 +6,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * реализация аннтоции для проверки дат начала и конца бронирования <p>
+ *  валидация дат начала и конца бронирования <p>
  * начало бронирование строго раньше конца бронирования
  */
 public class EndDateAfterStartDateValidator implements ConstraintValidator<EndDateAfterStartDate, BookingDto> {

@@ -4,8 +4,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.shareit.util.ShareItEntity;
-
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,7 +20,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @EqualsAndHashCode(callSuper = false)
-public class ItemRequest extends ShareItEntity {
+public class ItemRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

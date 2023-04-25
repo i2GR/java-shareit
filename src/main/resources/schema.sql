@@ -30,22 +30,6 @@ CREATE TABLE bookings (
   CONSTRAINT booking_start_end CHECK (start_date < end_date)
 );
 
-CREATE TABLE statuses (
-    id INT,
-    status varchar(16)
-);
-
-INSERT INTO statuses (id, status)
-VALUES
-(1, 'WAITING'),
-(2, 'APPROVED'),
-(3, 'REJECTED'),
-(4, 'CANCELED'),
-(5, 'ALL'),
-(6, 'PAST'),
-(7, 'CURRENT'),
-(8, 'FUTURE');
-
 CREATE TABLE comments (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     item_id BIGINT NOT NULL,

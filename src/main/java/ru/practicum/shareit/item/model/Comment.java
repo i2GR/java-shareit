@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.util.ShareItEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -25,7 +24,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(exclude = {"id"}, callSuper = false)
 @Entity
 @Table(name = "comments")
-public class Comment extends ShareItEntity {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,17 +34,15 @@ public class Comment extends ShareItEntity {
     /**
      * "заказчик" вещи, оставивший коммент
      */
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "author_id")
     private User author;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
 
     @NotBlank(message = "item description cannot be blank")
-    //TODO delete?
-    @Column(name = "text")
     private String text;
 
     private LocalDateTime created;

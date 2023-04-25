@@ -2,8 +2,8 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -18,7 +18,8 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.toList;
+import static java.lang.String.format;
 
 import static ru.practicum.shareit.util.Constants.SUCCESS_DELETE_MESSAGE;
 
@@ -29,16 +30,15 @@ import static ru.practicum.shareit.util.Constants.SUCCESS_DELETE_MESSAGE;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BookingService implements BookingServing {
 
     private final BookingDtoMapper bookingMapper;
 
-    @NonNull
     private final BookingRepository bookingStorage;
 
-    @NonNull
     private final UserRepository userStorage;
-    @NonNull
+
     private final ItemRepository itemStorage;
 
     /**
@@ -51,28 +51,28 @@ public class BookingService implements BookingServing {
      * @param dto DTO запроса на бронирование
      * @return DTO информация о бронировании
      */
+    @Transactional
     @Override
     public BookingResponseDto addBooking(Long bookerId, BookingDto dto) {
-        checkUserExistsElseThrow(bookerId);
         User booker = userStorage.findById(bookerId).orElseThrow(
-                () -> new NotFoundException("user not found")
+                () -> {
+                    log.info("Use with id {} not found", bookerId);
+                    throw new NotFoundException(format("user with id %d not found", bookerId));
+                }
         );
         Long itemId = dto.getItemId();
-        if (!itemStorage.existsById(itemId)) {
-            log.info("Item with id {} not found", itemId);
-            throw new NotFoundException(String.format("Booker with userId %d not found", itemId));
-        }
         Item item = itemStorage.findById(itemId).orElseThrow(
-                () -> new NotFoundException("item not found")
+                () -> {
+                    log.info("Item with id {} not found", itemId);
+                    throw new NotFoundException(format("item with id %d not found", itemId));
+                }
         );
         if (bookerId.equals(item.getOwnerId())) {
             log.info("Error creating booking");
             throw new NotFoundException("Error creating booking");
         }
         if (item.getAvailable()) {
-            Booking booking = bookingMapper.fromDto(dto);
-            booking.setItem(item);
-            booking.setBooker(booker);
+            Booking booking = bookingMapper.fromDto(dto, booker, item);
             Booking created = bookingStorage.save(booking);
             log.info("New booking added with new id {}", created.getId());
             return bookingMapper.toDto(created);
@@ -92,12 +92,13 @@ public class BookingService implements BookingServing {
      * @param approveState новый статус бронирования
      * @return DTO информация о бронировании
      */
+    @Transactional
     @Override
     public BookingResponseDto approve(Long ownerId, Long bookingId, Boolean approveState) {
         Booking booking = readById(bookingId);
         if (booking.getStatus() != BookingStatus.WAITING) {
             log.info("bad request of user {}", ownerId);
-            throw new BadRequestException(String.format("bad request of user %d", ownerId));
+            throw new BadRequestException(format("bad request of user %d", ownerId));
         }
         if (ownerId.equals(booking.getItem().getOwnerId())) {
             booking.setStatus(approveState ? BookingStatus.APPROVED : BookingStatus.REJECTED);
@@ -105,7 +106,7 @@ public class BookingService implements BookingServing {
             return bookingMapper.toDto(approved);
         }
         log.info("bad request of user {}", ownerId);
-        throw new NotFoundException(String.format("bad request of user %d", ownerId));
+        throw new NotFoundException(format("bad request of user %d", ownerId));
     }
 
     /**
@@ -122,8 +123,8 @@ public class BookingService implements BookingServing {
             log.info("booking id {} found", bookingId);
             return bookingMapper.toDto(booking);
         }
-        log.info("User with id {} is not related to booking", userId);
-        throw new NotFoundException(String.format("User with id %d is not related to booking", userId));
+        log.info("User with id {} is not related to booking {}", userId, bookingId);
+        throw new NotFoundException(format("User with id %d is not related to booking", userId));
     }
 
     /**
@@ -192,6 +193,7 @@ public class BookingService implements BookingServing {
      * @param bookingId идентификатор сохраненной вещи
      * @return сообщение об удалении
      */
+    @Transactional
     @Override
     public String deleteById(Long ownerId, Long bookingId) {
         Booking booking = readById(bookingId);
@@ -200,7 +202,7 @@ public class BookingService implements BookingServing {
             return SUCCESS_DELETE_MESSAGE;
         }
         log.info("User with id {} is not related to booking", ownerId);
-        throw new ForbiddenException(String.format("User with id %d is not related to booking", ownerId));
+        throw new ForbiddenException(format("User with id %d is not related to booking", ownerId));
     }
 
     /**
@@ -213,7 +215,7 @@ public class BookingService implements BookingServing {
         return bookingStorage.findById(bookingId).orElseThrow(
                 () -> {
                     log.info("Booking with Id {} not found", bookingId);
-                    throw new NotFoundException(String.format("Booking with Id %d not found", bookingId));
+                    throw new NotFoundException(format("Booking with Id %d not found", bookingId));
                 }
         );
     }
@@ -225,7 +227,7 @@ public class BookingService implements BookingServing {
     private void checkUserExistsElseThrow(Long userId) {
         if (!userStorage.existsById(userId)) {
             log.info("user with id {} not found", userId);
-            throw new NotFoundException(String.format("User with id %d not found", userId));
+            throw new NotFoundException(format("User with id %d not found", userId));
         }
     }
 
@@ -235,6 +237,6 @@ public class BookingService implements BookingServing {
      * @return List<BookingResponseDto>
      */
     private List<BookingResponseDto> listBookingResponseDTOs(List<Booking> bookings) {
-        return bookings.stream().map(bookingMapper::toDto).collect(Collectors.toList());
+        return bookings.stream().map(bookingMapper::toDto).collect(toList());
     }
 }

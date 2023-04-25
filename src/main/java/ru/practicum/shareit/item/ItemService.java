@@ -2,8 +2,8 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.model.Booking;
@@ -18,14 +18,15 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.groupingBy;
+import static java.lang.String.format;
 
 import static ru.practicum.shareit.util.Constants.SUCCESS_DELETE_MESSAGE;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -35,29 +36,31 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ItemService implements ItemServing {
 
-    @NonNull
     private final ItemDtoMapper itemMapper;
 
-    @NonNull
     private final ItemResponseDtoMapper itemResponseMapper;
 
-    @NonNull
     private final CommentDtoMapper commentMapper;
 
-    @NonNull
     private final ItemRepository itemStorage;
 
-    @NonNull
     private final BookingRepository bookingStorage;
 
-    @NonNull
     private final CommentRepository commentStorage;
 
-    @NonNull
     private final UserRepository userStorage;
 
+
+    /**
+     * добавление вещи
+     * @param ownerId идентификатор пользователя, которому принадлежит вещь
+     * @param dto DTO-представление вещи
+     * @return простое DTO-представление для класса Item без дополнительных полей
+     */
+    @Transactional
     @Override
     public ItemDto addItem(Long ownerId, ItemDto dto) {
         Item item = itemMapper.fromDto(dto);
@@ -66,6 +69,15 @@ public class ItemService implements ItemServing {
         return itemMapper.toDto(created);
     }
 
+    /**
+     * обновление инфомарции о вещи владельцем-вещи
+     * @param ownerId идентификатор пользователя, которому принадлежит вещь
+     * @param itemId идентификатор вещи, содержащейся в приложении
+     * @param dto DTO для вещи <p>
+     * частично заполненные поля
+     * @return простое DTO-представление для класса Item без дополнительных полей
+     */
+    @Transactional
     @Override
     public ItemDto patch(Long ownerId, Long itemId, ItemDto dto) {
         Item item = readById(itemId);
@@ -75,29 +87,28 @@ public class ItemService implements ItemServing {
         return itemMapper.toDto(updated);
     }
 
+    /**
+     * получение вещи по идентификатору пользователем-<b>владельцем</b><p>
+     * @param ownerId идентификатор пользователя, сделавшего Http-запрос
+     * @param itemId идентификатор сохраненной вещи
+     * @return DTO-представление для класса Item <b>с</b>дополнительными полями <p>
+     *     (запросы на бронирование, комментарии)
+     */
     @Override
-    public ItemResponseDto getById(Long itemId) {
-        return itemResponseMapper.toDto(readById(itemId));
-    }
-
-    @Override
-    public ItemResponseDto getByOwnerById(Long userId, Long itemId) {
+    public ItemResponseDto getByOwnerById(Long ownerId, Long itemId) {
         Item item = readById(itemId);
-        if (userId.equals(item.getOwnerId())) {
-            LocalDateTime moment = LocalDateTime.now(); //
-            Booking last = bookingStorage.findByItem_OwnerIdAndStartIsBeforeOrderByEndDesc(userId, moment)
-                    .stream()
-                    .filter(b -> (b.getStatus() != BookingStatus.WAITING && b.getStatus() != BookingStatus.REJECTED))
-                    .max((b1, b2) -> b1.getEnd().isBefore(b2.getEnd()) ? -1 : 1)
-                    .orElse(null);
+        if (ownerId.equals(item.getOwnerId())) {
+            LocalDateTime moment = LocalDateTime.now();
+            Booking last = bookingStorage.findFirst1ByItemIdAndStartLessThanEqualAndStatusNotInOrderByStartDesc(
+                    itemId,
+                    moment,
+                    List.of(BookingStatus.WAITING, BookingStatus.REJECTED)).orElse(null);
             item.setLastBooking(last);
-            Booking next = bookingStorage.findByItem_OwnerIdAndStartIsAfterOrderByStartAsc(userId, moment)
-                    .stream()
-                    .filter(b -> (b.getStatus() != BookingStatus.WAITING && b.getStatus() != BookingStatus.REJECTED))
-                    .findFirst()
-                    .orElse(null);
+            Booking next = bookingStorage.findFirst1ByItemIdAndStartGreaterThanEqualAndStatusNotInOrderByStartAsc(
+                    itemId,
+                    moment,
+                    List.of(BookingStatus.WAITING, BookingStatus.REJECTED)).orElse(null);
             item.setNextBooking(next);
-            int a = 1;
         }
         List<CommentResponseDto> commentResponseDtoList = commentStorage.findByItem_Id(itemId)
                 .stream()
@@ -108,13 +119,20 @@ public class ItemService implements ItemServing {
         return itemDto;
     }
 
+    /**
+     * получение списка вещей по идентификатору пользователем-<b>владельцем</b><p>
+     * @param ownerId идентификатор пользователя-владельца вещи
+     * @return DTO-представление для класса Item <b>с</b>дополнительными полями <p>
+     *     (запросы на бронирование, комментарии)
+     */
     @Override
     public List<ItemResponseDto> getAllByUserId(Long ownerId) {
         List<Item> items = itemStorage.findByOwnerIdEquals(ownerId);
         List<Booking> bookings = bookingStorage.findByItem_OwnerIdOrderByStartDesc(ownerId);
         LocalDateTime moment = LocalDateTime.now();
-        List<Comment> commentsOfUserItems = commentStorage.findByItem_OwnerIdEquals(ownerId);
-        Map<Long, List<CommentResponseDto>> itemIdToCommentDtoList = mapItemIdToCommentDtoList(items, commentsOfUserItems);
+        Map<Long, List<CommentResponseDto>> itemIdToCommentDtoList = commentStorage.findByItem_OwnerIdEquals(ownerId)
+                .stream()
+                .collect(groupingBy(comment -> comment.getItem().getId(), mapping(commentMapper::toDto, toList())));
         setLastBookingsToItems(items, bookings, moment);
         setNextBookingsToItems(items, bookings, moment);
         return items.stream()
@@ -123,6 +141,14 @@ public class ItemService implements ItemServing {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * удаление вещи по идентификатору пользователем-<b>владельцем</b><p>
+     * @param ownerId идентификатор пользователя, которому принадлежит вещь
+     * @param itemId идентификатор сохраненной вещи
+     * @implNote по ТЗ не определен эндпойнт
+     * @return сообщение об удалении
+     */
+    @Transactional
     @Override
     public String deleteById(Long ownerId, Long itemId) {
         checkUserAccess(ownerId, readById(itemId).getId());
@@ -131,6 +157,11 @@ public class ItemService implements ItemServing {
         return SUCCESS_DELETE_MESSAGE;
     }
 
+    /**
+     * поиск вещи по текстовому запросу в названию или описании вещи
+     * @param query строковое представление запроса
+     * @return список вещей: DTO-представление для класса Item <b>без</b>дополнительных полей
+     */
     @Override
     public List<ItemDto> search(String query) {
         if (query == null || query.isBlank()) {
@@ -139,9 +170,19 @@ public class ItemService implements ItemServing {
         }
         return itemStorage.findDistinctByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(query, query).stream()
                                             .map(itemMapper::toDto)
-                                            .collect(Collectors.toList());
+                                            .collect(toList());
     }
 
+    /**
+     * добавление комментария к вещи<p>
+     * доступно только пользователю-заказчику с подтвержденным бронированием <p>
+     * @param authorId идентификатор пользователя- автора комментария
+     * @param itemId идентификатор вещи для шаринга
+     * @param commentDto DTO-представление комментария
+     * @return DTO-представление для класса Item <b>с</b>дополнительными полями <p>
+     *      (запросы на бронирование, комментарии)
+     */
+    @Transactional
     @Override
     public CommentResponseDto addComment(Long authorId, Long itemId, CommentDto commentDto) {
         LocalDateTime instant = LocalDateTime.now();
@@ -173,7 +214,7 @@ public class ItemService implements ItemServing {
         userStorage.findById(ownerId).orElseThrow(
                     () -> {
                         log.info("User with Id {} not found", ownerId);
-                        throw new NotFoundException(String.format("User with Id %d not found", ownerId));
+                        throw new NotFoundException(format("User with Id %d not found", ownerId));
                     }
         );
         item.setOwnerId(ownerId);
@@ -192,6 +233,12 @@ public class ItemService implements ItemServing {
         }
     }
 
+    /**
+     * вспомогательный метод чтения вещи из БД
+     * @param itemId идентификатор вещи
+     * @return сущность вещи, если она найдена в базе
+     */
+
     private Item readById(Long itemId) {
         return itemStorage.findById(itemId).orElseThrow(
                 () -> {
@@ -201,6 +248,13 @@ public class ItemService implements ItemServing {
         );
     }
 
+    /**
+     * вспомогательный метод ассоциации <b>последних</b> запросов на бронирование к вещам из списка<p>
+     * при получении списка вещей по идентификатору пользователем-<b>владельцем</b><p><p>
+     * @param items список вещей пользователя-владельца,к которым ассоциируется последний запрос
+     * @param bookings список запросов на бронирование к вещам пользователя-владельца
+     * @param moment текущий момент поиска
+     */
     private void setLastBookingsToItems(List<Item> items, List<Booking> bookings, LocalDateTime moment) {
         Map<Long, Booking> itemIdMapsLastBooking = new HashMap<>();
         for (Booking booking: bookings) {
@@ -213,6 +267,13 @@ public class ItemService implements ItemServing {
         items.forEach(item -> item.setLastBooking(itemIdMapsLastBooking.get(item.getId())));
     }
 
+    /**
+     * вспомогательный метод ассоциации <b>следующих</b> запросов на бронирование к вещам из списка<p>
+     * при получении списка вещей по идентификатору пользователем-<b>владельцем</b><p><p>
+     * @param items список вещей пользователя-владельца ассоциируется следующий запрос
+     * @param bookings список запросов на бронирование к вещам пользователя-владельца
+     * @param moment текущий момент поиска
+     */
     private void setNextBookingsToItems(List<Item> items, List<Booking> bookings, LocalDateTime moment) {
         Map<Long, Booking> itemIdMapsNextBooking = new HashMap<>();
         for (Booking booking: bookings) {
@@ -223,13 +284,5 @@ public class ItemService implements ItemServing {
             }
         }
         items.forEach(item -> item.setNextBooking(itemIdMapsNextBooking.get(item.getId())));
-    }
-
-    private Map<Long, List<CommentResponseDto>> mapItemIdToCommentDtoList(List<Item> items, List<Comment> comments) {
-        Map<Long, List<CommentResponseDto>> itemIdMapsListOfComments = new HashMap<>();
-        for (Comment comment : comments) {
-            itemIdMapsListOfComments.putIfAbsent(comment.getItem().getId(), new ArrayList<>()).add(commentMapper.toDto(comment));
-        }
-        return itemIdMapsListOfComments;
     }
 }

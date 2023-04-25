@@ -10,7 +10,7 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 
 /**
- * Item <=> ItemDto Mapstruct-маппер <p>
+ * Comment <=> CommentDto Mapstruct-маппер <p>
  * ТЗ-13
  */
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,

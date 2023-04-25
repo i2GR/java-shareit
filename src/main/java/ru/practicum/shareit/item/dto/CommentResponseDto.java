@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 /**
- * DTO для класса Comment d http-запросе <p>
+ * DTO для класса Comment в http-запросе <p>
  * ТЗ-14
  */
 @Getter

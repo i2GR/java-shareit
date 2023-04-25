@@ -17,7 +17,7 @@ public interface ItemServing {
     /**
      * добавление вещи
      * @param ownerId идентификатор пользователя, которому принадлежит вещь
-     * @return экз. DTO для добавленного  пользователя
+     * @return Экз. DTO для добавленного пользователя
      */
     ItemDto addItem(Long ownerId, ItemDto itemDto);
 
@@ -27,16 +27,9 @@ public interface ItemServing {
      * @param itemId идентификатор сохраненной вещи
      * @param dto DTO для вещи <p>
      * частично заполненные поля
-     * @return экз. DTO для добавленного  пользователя
+     * @return Экз. DTO для добавленного пользователя
      */
     ItemDto patch(Long ownerId, Long itemId, ItemDto dto);
-
-    /**
-     * получение DTO для вещи из хранилища
-     * @param itemId идентификатор сохраненной вещи
-     * @return экз. DTO для вещи из хранилища
-     */
-    ItemResponseDto getById(Long itemId);
 
     /**
      * получение DTO для вещи из хранилища
@@ -57,13 +50,13 @@ public interface ItemServing {
      * @implNote если вещь не принадлежит пользователю, она не должна быть удалена
      * @param ownerId идентификатор пользователя, которому принадлежит вещь
      * @param itemId идентификатор сохраненной вещи
-     * @return DTO для пользователя (уудаленный пользователь)
+     * @return DTO для пользователя (удаленный пользователь)
      */
     String deleteById(Long ownerId, Long itemId);
 
     /**
      * поиск вещей по текстовому запросу
-     * @param query строковое представление запроса - клчювое сочетание для поиска
+     * @param query строковое представление запроса
      * @return список DTO, для которых было найдено совпадение
      */
     List<ItemDto> search(String query);

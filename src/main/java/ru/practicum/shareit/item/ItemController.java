@@ -2,8 +2,9 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.booking.validation.OnCreate;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentResponseDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -11,7 +12,6 @@ import ru.practicum.shareit.item.dto.ItemResponseDto;
 
 import static ru.practicum.shareit.util.Constants.SHARER_USER_HTTP_HEADER;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -25,9 +25,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(path = "/items")
+@Validated
 public class ItemController {
 
-    @NonNull
     private final ItemServing itemService;
 
     /**
@@ -37,7 +37,8 @@ public class ItemController {
      * @return DTO-класс сущности вещи для шаринга, со всеми сохраненными данными в приложении
      */
     @PostMapping
-    public ItemDto postItem(@RequestHeader(value = SHARER_USER_HTTP_HEADER) Long ownerId, @RequestBody @Valid ItemDto dto) {
+    public ItemDto postItem(@RequestHeader(value = SHARER_USER_HTTP_HEADER) Long ownerId,
+                            @RequestBody @Validated(value = OnCreate.class) ItemDto dto) {
         log.info("[post] item http-request with owner id {}", ownerId);
         return itemService.addItem(ownerId, dto);
     }
@@ -113,7 +114,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public CommentResponseDto addComment(@RequestHeader(value = SHARER_USER_HTTP_HEADER) Long authorId,
                                          @PathVariable(name = "itemId") Long itemId,
-                                         @RequestBody @Valid CommentDto dto) {
+                                         @RequestBody @Validated(value = OnCreate.class) CommentDto dto) {
         log.info("[post] comment http-request to item with id {} from user@id {}", itemId, authorId);
         return itemService.addComment(authorId, itemId, dto);
     }

@@ -1,8 +1,11 @@
 package ru.practicum.shareit.user.model;
 
-import lombok.*;
-import ru.practicum.shareit.util.ShareItEntity;
-
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -14,27 +17,21 @@ import javax.validation.constraints.NotNull;
 @Builder
 @Getter
 @Setter
-@AllArgsConstructor/*(access = AccessLevel.PACKAGE)*/
-@NoArgsConstructor/*(access = AccessLevel.PACKAGE)*/
-//@Setter/*(value = AccessLevel.PACKAGE)*/
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = {"id"}, callSuper = false)
 @Entity
 @Table(name = "users")
-public class User extends ShareItEntity {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    //TODO delete?
-    @Column(name = "id")
     private Long id;
 
     @Email(message = "Bad User.email")
-    //TODO delete?
-    @Column(name = "email", unique = true)
+    @Column(unique = true)
     private String email;
 
     @NotNull
-    //TODO delete?
-    @Column(name = "name")
     private String name;
 }

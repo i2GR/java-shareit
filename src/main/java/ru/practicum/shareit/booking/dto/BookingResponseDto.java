@@ -12,8 +12,6 @@ import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDateTime;
 
 import ru.practicum.shareit.booking.validation.EndDateAfterStartDate;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.booking.model.BookingStatus;
 
 /**
@@ -36,9 +34,25 @@ public class BookingResponseDto {
     @Future
     private LocalDateTime end;
 
-    private Item item;
+    private ItemDto item;
 
-    private User booker;
+    private BookerDto booker;
 
     private BookingStatus status;
+
+    @Getter
+    @Builder
+    @EqualsAndHashCode
+    public static class BookerDto {
+        private long id;
+        private String name;
+    }
+
+    @Getter
+    @Builder
+    @EqualsAndHashCode
+    public static class ItemDto {
+        private long id;
+        private String name;
+    }
 }

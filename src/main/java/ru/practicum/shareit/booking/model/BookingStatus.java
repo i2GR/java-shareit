@@ -57,5 +57,4 @@ public enum BookingStatus {
         }
         throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
     }
-
 }
