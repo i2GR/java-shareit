@@ -25,10 +25,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(path = "/items")
-@Validated
 public class ItemController {
 
-    private final ItemServing itemService;
+    private final ItemService itemService;
 
     /**
      * Создание вещи для шаринга
@@ -58,12 +57,12 @@ public class ItemController {
     }
 
     /**
-     * Получение информации о  вещи для шаринга
+     * Получение информации о вещи для шаринга
      * @param itemId идентификатор вещи для шаринга
      * @return DTO-класс сущности вещи для шаринга, с сохраненными данными в приложении
      */
     @GetMapping("/{itemId}")
-    public ItemResponseDto getItem(@RequestHeader(value = SHARER_USER_HTTP_HEADER, required = false) Long ownerId,
+    public ItemResponseDto getItem(@RequestHeader(value = SHARER_USER_HTTP_HEADER) Long ownerId,
                                    @PathVariable(name = "itemId") Long itemId) {
             log.info("[get] item http-request with id {} by user with id {}", itemId, ownerId);
             return itemService.getByOwnerById(ownerId, itemId);

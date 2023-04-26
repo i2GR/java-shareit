@@ -8,6 +8,4 @@ public class Constants {
 
     public static final String SHARER_USER_HTTP_HEADER = "X-Sharer-User-Id";
     public static final String SUCCESS_DELETE_MESSAGE = "deleted";
-
-    //public static LocalDateTime moment;
 }

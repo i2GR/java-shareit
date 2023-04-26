@@ -22,5 +22,5 @@ public interface BookingDtoMapper {
     BookingResponseDto toDto(Booking booking);
 
     @InheritConfiguration
-    Booking update(BookingDto source, @MappingTarget Booking booking);
+    void update(BookingDto dto, @MappingTarget Booking booking);
 }

@@ -7,11 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDateTime;
 
-import ru.practicum.shareit.booking.validation.EndDateAfterStartDate;
 import ru.practicum.shareit.booking.model.BookingStatus;
 
 /**
@@ -22,16 +19,13 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(exclude = {"id"})
-@EndDateAfterStartDate
 public class BookingResponseDto {
 
     @Setter
     private Long id;
 
-    @FutureOrPresent
     private LocalDateTime start;
 
-    @Future
     private LocalDateTime end;
 
     private ItemDto item;

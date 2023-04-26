@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.validation.OnCreate;
+import ru.practicum.shareit.booking.validation.OnUpdate;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
@@ -19,10 +20,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(path = "/users")
-@Validated
 public class UserController {
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @PostMapping
     public UserDto postUser(@RequestBody @Validated(value = OnCreate.class) UserDto dto) {
@@ -31,7 +31,8 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public UserDto patchUser(@PathVariable(name = "userId") Long userId, @RequestBody UserDto dto) {
+    public UserDto patchUser(@PathVariable(name = "userId") Long userId,
+                             @Validated(value = OnUpdate.class) @RequestBody UserDto dto) {
         log.info("[patch] user http-request with id {}", userId);
         return userService.patch(userId, dto);
     }
