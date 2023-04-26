@@ -20,9 +20,6 @@ public interface ItemResponseDtoMapper {
 
     ItemResponseDto toDtoWithComments(Item item, List<Comment> comments);
 
-    @InheritConfiguration
-    Item update(ItemResponseDto source, @MappingTarget Item destination);
-
     @Mapping(target = "bookerId", source = "booking.booker.id")
     ItemResponseDto.BookingDto map(Booking booking);
 }

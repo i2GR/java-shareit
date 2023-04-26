@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -77,11 +79,13 @@ class ItemDtoMapperTest {
                 .build();
         ItemDto itemDtoNullValues = ItemDto.builder().build();
 
+        //when
         mapper.update(itemDtoDescriptionOnly, itemToUpdateDescription);
         mapper.update(itemDtoDescriptionAndAvailable, itemToUpdateDescriptionAndAvailable);
         mapper.update(itemDtoNameOnly, itemToUpdateName);
         mapper.update(itemDtoNullValues, itemToUpdateNullValues);
 
+        //then
         assertEquals("update item", itemToUpdateName.getName());
         assertEquals("description", itemToUpdateName.getDescription());
         assertEquals(true, itemToUpdateName.getAvailable());
@@ -105,5 +109,34 @@ class ItemDtoMapperTest {
         assertEquals(true, itemToUpdateNullValues.getAvailable());
         assertEquals(1L, itemToUpdateNullValues.getId());
         assertEquals(1L, itemToUpdateNullValues.getOwnerId());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "  "})
+    void updateBlankStringsInDto(String input) {
+        Item itemToUpdateName = Item.builder()
+                .id(1L)
+                .ownerId(1L)
+                .name("item")
+                .description("description")
+                .available(true).build();
+        Item itemToUpdateDescription = Item.builder()
+                .id(1L)
+                .ownerId(1L)
+                .name("item")
+                .description("description")
+                .available(true).build();
+        ItemDto itemDtoBlankName = ItemDto.builder().name(input).build();
+        ItemDto itemDtoBlankDescription = ItemDto.builder().description(input).build();
+
+        //when
+        mapper.update(itemDtoBlankName, itemToUpdateName);
+        mapper.update(itemDtoBlankDescription, itemToUpdateDescription);
+
+        //then
+        assertEquals("item", itemToUpdateName.getName());
+        assertEquals("description", itemToUpdateName.getDescription());
+        assertEquals("item", itemToUpdateDescription.getName());
+        assertEquals("description", itemToUpdateDescription.getDescription());
     }
 }

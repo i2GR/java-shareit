@@ -5,8 +5,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.shareit.booking.validation.OnCreate;
+import ru.practicum.shareit.booking.validation.OnUpdate;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
 /**
@@ -21,10 +23,10 @@ public class UserDto {
     @Setter
     private Long id;
 
-    @Email(message = "Bad User.email", groups = {OnCreate.class})
-    @NotEmpty(message = "Email cannot be empty", groups = {OnCreate.class})
+    @Email(message = "Bad User.email", groups = {OnCreate.class, OnUpdate.class}) //если передался, то д. соответствовать
+    @NotEmpty(message = "Email cannot be empty", groups = {OnCreate.class}) //при патче может не передаваться ?
     private String email;
 
-    @NotEmpty(message = "name cannot be empty", groups = {OnCreate.class})
+    @NotBlank(message = "name cannot be empty", groups = {OnCreate.class}) //при патче может не передаваться
     private String name;
 }

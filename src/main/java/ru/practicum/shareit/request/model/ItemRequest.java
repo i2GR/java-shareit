@@ -26,7 +26,6 @@ public class ItemRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull (message = "request description is null")
     @NotBlank(message = "item request description cannot be blank")
     private String description;
 
@@ -37,7 +36,7 @@ public class ItemRequest {
     private Long requesterId;
 
     /**
-     * идентификатор владельца ,откликнувшегося на запрос - существующий в ShareIt User#id
+     * идентификатор владельца, откликнувшегося на запрос - существующий в ShareIt User#id
      */
     private Long responderId;
 

@@ -21,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class UserServiceTest {
+class UserServiceImplTest {
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     private final JdbcTemplate jdbcTemplate;
 

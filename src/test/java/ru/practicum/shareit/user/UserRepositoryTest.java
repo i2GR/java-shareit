@@ -24,7 +24,9 @@ class UserRepositoryTest {
 
     @BeforeEach
     void reinitialiseUsers() {
-        jdbcTemplate.update("DELETE FROM users");
+        jdbcTemplate.update("DELETE FROM bookings"); //боль:( спринт 15 должен решить
+        jdbcTemplate.update("DELETE FROM items"); //боль:( спринт 15 должен решить
+        jdbcTemplate.update("DELETE FROM users"); //боль:( спринт 15 должен решить
     }
 
     @Test

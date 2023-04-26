@@ -65,13 +65,13 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * сортировка по убыванию времени окончания бронирования
      * @param itemId идентификатор вещи
      * @param moment текущий момент
-     * @param statusList статусы бронирования, которые исключаются из поиска
-     * @return информация о бронировании ,соответствующего условиям поиска
+     * @param status статус бронирования - APPROVED
+     * @return информация о бронировании, соответствующего условиям поиска
      */
-    Optional<Booking> findFirst1ByItemIdAndStartLessThanEqualAndStatusNotInOrderByStartDesc(
+    Optional<Booking> findFirst1ByItemIdAndStartLessThanEqualAndStatusOrderByStartDesc(
             Long itemId,
             LocalDateTime moment,
-            List<BookingStatus> statusList);
+            BookingStatus status);
 
     /**
      * получение <b>СЛЕДУЮЩЕГО бронирования</b><p>
@@ -79,13 +79,13 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * сортировка по возрастанию времени окончания бронирования
      * @param itemId идентификатор вещи
      * @param moment текущий момент
-     * @param statusList статусы бронирования, которые исключаются из поиска
+     * @param status статус бронирования APPROVED
      * @return список (List)
      */
-    Optional<Booking> findFirst1ByItemIdAndStartGreaterThanEqualAndStatusNotInOrderByStartAsc(
+    Optional<Booking> findFirst1ByItemIdAndStartGreaterThanEqualAndStatusOrderByStartAsc(
             Long itemId,
             LocalDateTime moment,
-            List<BookingStatus> statusList);
+            BookingStatus status);
 
     /**
      * получение списка бронирований пользователя-владельца <p>

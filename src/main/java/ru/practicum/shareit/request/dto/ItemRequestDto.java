@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 /**
  * DTO для класса ItemRequest <p>
  * ТЗ-13 <p>
- * @implNote expect SP-14 specs for more details
+ * @implNote expect SP-15 specs for more details
  */
 @Getter
 @Builder
@@ -22,7 +22,6 @@ public class ItemRequestDto {
     @Setter
     private Long id;
 
-    @NotNull (message = "request description is null")
     @NotBlank(message = "request description name cannot be blank")
     private String description;
 

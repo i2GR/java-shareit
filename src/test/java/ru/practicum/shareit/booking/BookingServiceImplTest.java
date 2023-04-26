@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class BookingServiceTest {
+class BookingServiceImplTest {
 
-    private final BookingService bookingService;
+    private final BookingServiceImpl bookingService;
     private final JdbcTemplate jdbcTemplate;
     private static final Long DEFAULT_ITEM_ID = 1L;
     private static final LocalDateTime DEFAULT_START_DATE = LocalDateTime.of(LocalDate.now(), LocalTime.of(0,0));
