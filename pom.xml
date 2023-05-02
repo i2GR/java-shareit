@@ -18,6 +18,7 @@
 		бэкенд для сервиса шеринга
 		SP13: Каркас Spring приложения. Добавление контроллеров, реализация модели данных (DTO-классы, маппинг)
 		SP14: работа с базой данных, возможность бронировать вещи
+		SP15: возможность создавать запрос вещи и добавлять вещи в ответ. Тесты
 	</description>
 
 	<properties>
@@ -68,6 +69,17 @@
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
 			<version>${mapstruct.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.13.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.13.3</version>
 		</dependency>
 
 	</dependencies>

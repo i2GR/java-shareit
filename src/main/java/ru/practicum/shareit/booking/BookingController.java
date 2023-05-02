@@ -20,6 +20,7 @@ import static ru.practicum.shareit.util.Constants.SHARER_USER_HTTP_HEADER;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
+@Validated
 @RequestMapping(path = "/bookings")
 public class BookingController {
 
