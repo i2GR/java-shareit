@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,7 +19,14 @@ class ItemDtoMapperTest {
 
     @Test
     void toDto() {
-        Item item = Item.builder().id(1L).ownerId(1L).name("item").description("description").available(true).build();
+        Item item = Item.builder()
+                .id(1L)
+                .ownerId(1L)
+                .name("item")
+                .description("description")
+                .available(true)
+                .request(ItemRequest.builder().id(1L).build())
+                .build();
 
         ItemDto itemDto = mapper.toDto(item);
 
@@ -27,11 +35,18 @@ class ItemDtoMapperTest {
         assertEquals("description", itemDto.getDescription());
         assertEquals(1L, itemDto.getId());
         assertEquals(true, itemDto.getAvailable());
+        assertEquals(1L, itemDto.getRequestId());
     }
 
     @Test
     void fromDto() {
-        ItemDto itemDto = ItemDto.builder().id(1L).name("item").description("description").available(true).build();
+        ItemDto itemDto = ItemDto.builder()
+                .id(1L)
+                .name("item")
+                .description("description")
+                .available(true)
+                .requestId(1L)
+                .build();
 
         Item item = mapper.fromDto(itemDto);
 

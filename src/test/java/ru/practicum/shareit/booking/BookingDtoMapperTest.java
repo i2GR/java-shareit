@@ -20,7 +20,7 @@ class BookingDtoMapperTest {
     private final LocalDateTime start = LocalDateTime.MIN;
     private final LocalDateTime end = LocalDateTime.MAX;
 
-    private User booker = User.builder().id(1L).name("owner").email("owner@host.dom").build();
+    private final User booker = User.builder().id(1L).name("owner").email("owner@host.dom").build();
 
     private final Item item = Item.builder()
             .id(1L)

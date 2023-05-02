@@ -52,7 +52,7 @@ public enum BookingStatus {
             .collect(Collectors.toSet());
 
     public static BookingStatus fromString(String str) {
-        if (statuses.contains(str.toUpperCase())) {
+        if (str != null && statuses.contains(str.toUpperCase())) {
             return BookingStatus.valueOf(BookingStatus.class, str.toUpperCase());
         }
         throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");

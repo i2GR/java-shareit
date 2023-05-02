@@ -40,8 +40,8 @@ public class UserServiceImpl implements UserService {
     public UserDto patch(Long userId, UserDto dto) {
         User user = userStorage.findById(userId).orElseThrow(
                 () -> {
-                    log.info("Service error reading User with id {}", userId);
-                    throw new StorageErrorException(format("Service error reading User with id %d", userId));
+                    log.info("User#id {} not found", userId);
+                    throw new NotFoundException(format("User#id %d not found", userId));
                 }
         );
         userMapper.update(dto, user);

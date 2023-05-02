@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -42,7 +43,7 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemStorage;
 
     /**
-     * добавдение бронирования<p>
+     * добавление бронирования<p>
      * - проверка пользователя в БД<p>
      * - проверка вещи в БД <p>
      * - проверка доступности вещи<p>
@@ -56,7 +57,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponseDto addBooking(Long bookerId, BookingDto dto) {
         User booker = userStorage.findById(bookerId).orElseThrow(
                 () -> {
-                    log.info("Use with id {} not found", bookerId);
+                    log.info("User with id {} not found", bookerId);
                     throw new NotFoundException(format("user with id %d not found", bookerId));
                 }
         );
@@ -68,8 +69,8 @@ public class BookingServiceImpl implements BookingService {
                 }
         );
         if (bookerId.equals(item.getOwnerId())) {
-            log.info("Error creating booking");
-            throw new NotFoundException("Error creating booking");
+            log.info("Booker user is item-owner user");
+            throw new NotFoundException("Booker user is item-owner user");
         }
         if (item.getAvailable()) {
             Booking booking = bookingMapper.fromDto(dto, booker, item);
@@ -97,8 +98,8 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponseDto approve(Long ownerId, Long bookingId, Boolean approveState) {
         Booking booking = readById(bookingId);
         if (booking.getStatus() != BookingStatus.WAITING) {
-            log.info("bad request of user {}", ownerId);
-            throw new BadRequestException(format("bad request of user %d", ownerId));
+            log.info("bad status of booking {}", booking.getStatus().toString());
+            throw new BadRequestException(format("bad status of booking %s", booking.getStatus().toString()));
         }
         if (ownerId.equals(booking.getItem().getOwnerId())) {
             booking.setStatus(approveState ? BookingStatus.APPROVED : BookingStatus.REJECTED);
@@ -109,7 +110,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     /**
-     * получение инйформации о бронировании пользователем владельцем/заказчиком
+     * получение информации о бронировании пользователем владельцем/заказчиком
      * @param userId идентификатор автора бронирования, либо владельца вещи
      * @param bookingId идентификатор бронирования
      * @return DTO информация о бронировании
@@ -130,29 +131,36 @@ public class BookingServiceImpl implements BookingService {
      * получение списка бронирований пользователя-заказчика
      * @param bookerId идентификатор <b>АВТОРА бронирования</b>
      * @param status необязательный (по умолчанию равен ALL)
+     * @param from индекс первого элемента (нумерация начинается с 0)
+     * @param size количество элементов для отображения
      * @return список DTO о бронировании
      */
     @Override
-    public List<BookingResponseDto> getListByBooker(Long bookerId, BookingStatus status) {
+    public List<BookingResponseDto> getListByBooker(Long bookerId, BookingStatus status, Long from, Integer size) {
         checkUserExistsElseThrow(bookerId);
         LocalDateTime moment = LocalDateTime.now();
         switch (status) {
             case ALL:
                 return listBookingResponseDTOs(
-                        bookingStorage.findByBookerIdOrderByStartDesc(bookerId));
+                        bookingStorage.findByBookerIdOrderByStartDesc(
+                                bookerId, PageRequest.of((int) (from / size), size)));
             case FUTURE:
                 return listBookingResponseDTOs(
-                        bookingStorage.findByBookerIdAndStartIsAfterOrderByStartDesc(bookerId, moment));
+                        bookingStorage.findByBookerIdAndStartIsAfterOrderByStartDesc(
+                                bookerId, moment, PageRequest.of((int) (from / size), size)));
             case PAST:
                 return listBookingResponseDTOs(
-                        bookingStorage.findByBookerIdAndEndIsBeforeOrderByEndDesc(bookerId, moment));
+                        bookingStorage.findByBookerIdAndEndIsBeforeOrderByEndDesc(
+                                bookerId, moment, PageRequest.of((int) (from / size), size)));
             case CURRENT:
                 return listBookingResponseDTOs(
-                        bookingStorage.findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByEndDesc(bookerId, moment, moment));
+                        bookingStorage.findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByEndDesc(
+                                bookerId, moment, moment, PageRequest.of((int) (from / size), size)));
             //WAITING, REJECTED, CANCELLED
             default:
                 return listBookingResponseDTOs(
-                        bookingStorage.findByBookerIdAndStatusOrderByStartDesc(bookerId, status));
+                        bookingStorage.findByBookerIdAndStatusOrderByStartDesc(
+                                bookerId, status, PageRequest.of((int) (from / size), size)));
         }
     }
 
@@ -160,29 +168,36 @@ public class BookingServiceImpl implements BookingService {
      * получение списка бронирований пользователя-владельца
      * @param ownerId идентификатор <b>ВЛАДЕЛЬЦА вещи</b>
      * @param status необязательный (по умолчанию равен ALL)
+     * @param from индекс первого элемента (нумерация начинается с 0)
+     * @param size количество элементов для отображения
      * @return список DTO о бронировании
      */
     @Override
-    public List<BookingResponseDto> getListByOwner(Long ownerId, BookingStatus status) {
+    public List<BookingResponseDto> getListByOwner(Long ownerId, BookingStatus status, Long from, Integer size) {
         checkUserExistsElseThrow(ownerId);
         LocalDateTime moment = LocalDateTime.now();
         switch (status) {
             case ALL:
                 return listBookingResponseDTOs(
-                        bookingStorage.findByItem_OwnerIdOrderByStartDesc(ownerId));
+                        bookingStorage.findByItem_OwnerIdOrderByStartDesc(
+                                ownerId, PageRequest.of((int) (from / size), size)));
             case FUTURE:
                 return listBookingResponseDTOs(
-                        bookingStorage.findByItem_OwnerIdAndStartIsAfterOrderByStartDesc(ownerId, moment));
+                        bookingStorage.findByItem_OwnerIdAndStartIsAfterOrderByStartDesc(
+                                ownerId, moment, PageRequest.of((int) (from / size), size)));
             case PAST:
                 return listBookingResponseDTOs(
-                        bookingStorage.findByItem_OwnerIdAndEndIsBeforeOrderByEndDesc(ownerId, moment));
+                        bookingStorage.findByItem_OwnerIdAndEndIsBeforeOrderByEndDesc(
+                                ownerId, moment, PageRequest.of((int) (from / size), size)));
             case CURRENT:
                 return listBookingResponseDTOs(
-                        bookingStorage.findByItem_OwnerIdAndStartIsBeforeAndEndIsAfterOrderByEndDesc(ownerId, moment, moment));
+                        bookingStorage.findByItem_OwnerIdAndStartIsBeforeAndEndIsAfterOrderByEndDesc(
+                                ownerId, moment, moment, PageRequest.of((int) (from / size), size)));
             //WAITING, REJECTED, CANCELLED
             default:
                 return listBookingResponseDTOs(
-                        bookingStorage.findByItem_OwnerIdAndStatusOrderByStartDesc(ownerId, status));
+                        bookingStorage.findByItem_OwnerIdAndStatusOrderByStartDesc(
+                                ownerId, status, PageRequest.of((int) (from / size), size)));
         }
     }
 
@@ -207,7 +222,7 @@ public class BookingServiceImpl implements BookingService {
     /**
      * вспомогательный метод получения запроса на бронирование из БД по идентификатору
      * При отсутствии в БД записи выбрасывает исключение приложения NotFoundException
-     * @param bookingId идентификатор запрсоа на бронирование
+     * @param bookingId идентификатор запроса на бронирование
      * @return экземпляр запроса на бронирование
      */
     private Booking readById(Long bookingId) {

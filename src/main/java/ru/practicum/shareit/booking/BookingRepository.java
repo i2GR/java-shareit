@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -21,7 +22,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * @param status статус для выборки
      * @return список (List)
      */
-    List<Booking> findByBookerIdAndStatusOrderByStartDesc(Long bookerId, BookingStatus status);
+    List<Booking> findByBookerIdAndStatusOrderByStartDesc(Long bookerId, BookingStatus status, Pageable pageable);
 
     /**
      * получение списка бронирований пользователя-заказчика <p>
@@ -29,7 +30,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * @param bookerId идентификатор пользователя-заказчика
      * @return список (List)
      */
-    List<Booking> findByBookerIdOrderByStartDesc(Long bookerId);
+    List<Booking> findByBookerIdOrderByStartDesc(Long bookerId, Pageable pageable);
 
     /**
      * получение списка бронирований пользователя-заказчика <p>
@@ -37,9 +38,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * сортировка по убыванию времени начала бронирования
      * @param bookerId идентификатор пользователя-заказчика
      * @param moment текущий момент
+     * @param pageable параметр постраничного вывода
      * @return список (List)
      */
-    List<Booking> findByBookerIdAndStartIsAfterOrderByStartDesc(Long bookerId, LocalDateTime moment);
+    List<Booking> findByBookerIdAndStartIsAfterOrderByStartDesc(Long bookerId, LocalDateTime moment, Pageable pageable);
 
     /**
      * получение списка бронирований пользователя-заказчика <p>
@@ -47,17 +49,19 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * сортировка по убыванию времени начала бронирования
      * @param bookerId идентификатор пользователя-заказчика
      * @param moment текущий момент
+     * @param pageable параметр постраничного вывода
      * @return список (List)
      */
-    List<Booking> findByBookerIdAndEndIsBeforeOrderByEndDesc(Long bookerId, LocalDateTime moment);
+    List<Booking> findByBookerIdAndEndIsBeforeOrderByEndDesc(Long bookerId, LocalDateTime moment, Pageable pageable);
 
     /**
      * получение списка всех бронирований пользователя-владельца <p>
      * сортировка по убыванию времени начала бронирования
      * @param ownerId дентификатор пользователя-владельца
+     * @param pageable параметр постраничного вывода
      * @return список (List)
      */
-    List<Booking> findByItem_OwnerIdOrderByStartDesc(Long ownerId);
+    List<Booking> findByItem_OwnerIdOrderByStartDesc(Long ownerId, Pageable pageable);
 
     /**
      * получение <b>ПОСЛЕДНЕГО бронирования</b><p>
@@ -91,35 +95,39 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * получение списка бронирований пользователя-владельца <p>
      * <b>для выдачи списка БУДУЩИХ бронирований</b> <p>
      * выборка по времени начала бронирования после текущего момента <p>
-     * сортировка по убывванию времени окончания бронирования
+     * сортировка по убыванию времени окончания бронирования
      * @param moment текущий момент
+     * @param pageable параметр постраничного вывода
      * @return список (List)
      */
-    List<Booking> findByItem_OwnerIdAndStartIsAfterOrderByStartDesc(Long ownerId, LocalDateTime moment);
+    List<Booking> findByItem_OwnerIdAndStartIsAfterOrderByStartDesc(Long ownerId, LocalDateTime moment, Pageable pageable);
 
     /**
      * получение списка бронирований пользователя-владельца <p>
      * <b>для выдачи списка ПРОШЛЫХ бронирований</b> <p>
-     * выборка по времени окончаниябронирования до текущего момента <p>
-     * сортировка по убывванию времени окончания бронирования
+     * выборка по времени окончания бронирования до текущего момента <p>
+     * сортировка по убыванию времени окончания бронирования
      * @param moment текущий момент
+     * @param pageable параметр постраничного вывода
      * @return список (List)
      */
-    List<Booking> findByItem_OwnerIdAndEndIsBeforeOrderByEndDesc(Long ownerId, LocalDateTime moment);
+    List<Booking> findByItem_OwnerIdAndEndIsBeforeOrderByEndDesc(Long ownerId, LocalDateTime moment, Pageable pageable);
 
     /**
      * получение списка бронирований пользователя-заказчика <p>
      * <b>для выдачи списка ТЕКУЩИХ бронирований</b> <p>
      * выборка по времени начала ДО и времени окончания ПОСЛЕ текущего момента <p>
-     * сортировка по убывванию времени окончания бронирования
+     * сортировка по убыванию времени окончания бронирования
      * @param ownerId идентификатор пользователя-заказчика
      * @param forStart текущий момент
      * @param forEnd текущий момент
+     * @param pageable параметр постраничного вывода
      * @return список (List)
      */
     List<Booking> findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByEndDesc(Long ownerId,
                                                                             LocalDateTime forStart,
-                                                                            LocalDateTime forEnd);
+                                                                            LocalDateTime forEnd,
+                                                                            Pageable pageable);
 
     /**
      * получение списка бронирований пользователя-владельца <p>
@@ -127,9 +135,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * сортировка по убывванию времени начала бронирования
      * @param ownerId идентификатор пользователя-заказчика
      * @param status статус для выборки
+     * @param pageable параметр постраничного вывода
      * @return список (List)
      */
-    List<Booking> findByItem_OwnerIdAndStatusOrderByStartDesc(Long ownerId, BookingStatus status);
+    List<Booking> findByItem_OwnerIdAndStatusOrderByStartDesc(Long ownerId, BookingStatus status, Pageable pageable);
 
     /**
      * получение любого бронирования пользователя-заказчика <p>
@@ -153,9 +162,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * @param ownerId идентификатор пользователя-заказчика
      * @param forStart текущий момент
      * @param forEnd текущий момент
+     * @param pageable параметр постраничного вывода
      * @return список (List)
      */
     List<Booking> findByItem_OwnerIdAndStartIsBeforeAndEndIsAfterOrderByEndDesc(Long ownerId,
                                                                                 LocalDateTime forStart,
-                                                                                LocalDateTime forEnd);
+                                                                                LocalDateTime forEnd,
+                                                                                Pageable pageable);
 }

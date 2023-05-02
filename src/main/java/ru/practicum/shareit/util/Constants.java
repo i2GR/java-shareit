@@ -1,7 +1,7 @@
 package ru.practicum.shareit.util;
 
 /**
- * класс, содержащий конcтанты <p>
+ * класс, содержащий константы <p>
  * ТЗ-13 <p>
  */
 public class Constants {

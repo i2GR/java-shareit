@@ -12,7 +12,6 @@ import javax.validation.constraints.NotNull;
 
 /**
  * Model-класс информации о пользователе <p>
- * ТЗ-13
  */
 @Builder
 @Getter

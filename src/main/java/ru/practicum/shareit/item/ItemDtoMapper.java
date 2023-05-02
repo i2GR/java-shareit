@@ -12,6 +12,7 @@ import ru.practicum.shareit.item.model.Item;
         componentModel = "spring")
 public interface ItemDtoMapper {
 
+    @Mapping(target = "requestId", source = "item.request.id", defaultExpression = "java(null)")
     ItemDto toDto(Item item);
 
     Item fromDto(ItemDto dto);

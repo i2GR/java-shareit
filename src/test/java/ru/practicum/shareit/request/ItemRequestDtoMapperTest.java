@@ -5,9 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.dto.ItemRequestReplyDto;
 import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,6 +22,8 @@ class ItemRequestDtoMapperTest {
     @Autowired
     private ItemRequestDtoMapper mapper;
 
+    private final User requester = User.builder().id(1L).name("requester").email("requester@host.dom").build();
+
     @BeforeEach
     void instanceTime() {
         creationTimeStamp = LocalDateTime.now();
@@ -27,54 +32,29 @@ class ItemRequestDtoMapperTest {
     @Test
     void toDto() {
         ItemRequest itemRequest = ItemRequest.builder()
-                .id(1L).requesterId(1L)
+                .id(1L)
+                .requester(requester)
                 .description("description")
-                .created(creationTimeStamp)
                 .created(creationTimeStamp).build();
 
-        ItemRequestDto itemRequestDto = mapper.toDto(itemRequest);
+        ItemRequestReplyDto itemRequestDto = mapper.toDto(itemRequest, List.of());
 
         assertNotNull(itemRequestDto);
         assertEquals("description", itemRequestDto.getDescription());
-        assertEquals(1L, itemRequestDto.getId());
         assertEquals(creationTimeStamp, itemRequestDto.getCreated());
+        assertEquals(1L, itemRequestDto.getId());
     }
 
     @Test
     void fromDto() {
         ItemRequestDto itemRequestDto = ItemRequestDto.builder()
-                .id(1L)
                 .description("description")
-                .created(creationTimeStamp).build();
+                .build();
 
-        ItemRequest itemRequest = mapper.fromDto(itemRequestDto);
+        ItemRequest itemRequest = mapper.fromDto(itemRequestDto, requester, List.of(), creationTimeStamp);
 
         assertNotNull(itemRequest);
         assertEquals("description", itemRequest.getDescription());
-        assertEquals(1L, itemRequest.getId());
         assertEquals(creationTimeStamp, itemRequest.getCreated());
-    }
-
-    @Test
-    void update() {
-        ItemRequest requestToUpdateDescription = ItemRequest.builder().id(1L)
-                .description("ItemRequest")
-                .created(LocalDateTime.MIN).build();
-        ItemRequest requestToUpdateTime = ItemRequest.builder().id(1L)
-                .description("ItemRequest")
-                .created(LocalDateTime.MIN).build();
-
-        ItemRequestDto itemRequestDtoDescriptionOnly =  ItemRequestDto.builder().description("Description").build();
-        ItemRequestDto itemRequestDtoNewTime = ItemRequestDto.builder().created(creationTimeStamp).build();
-
-        mapper.update(itemRequestDtoDescriptionOnly, requestToUpdateDescription);
-        mapper.update(itemRequestDtoNewTime, requestToUpdateTime);
-
-
-        assertEquals("Description", requestToUpdateDescription.getDescription());
-        assertEquals(LocalDateTime.MIN, requestToUpdateDescription.getCreated());
-
-        assertEquals("ItemRequest", requestToUpdateTime.getDescription());
-        assertEquals(creationTimeStamp, requestToUpdateTime.getCreated());
     }
 }
