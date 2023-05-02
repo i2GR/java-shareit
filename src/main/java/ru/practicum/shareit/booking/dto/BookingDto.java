@@ -1,48 +1,44 @@
 package ru.practicum.shareit.booking.dto;
 
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.shareit.booking.BookingStatus;
-import ru.practicum.shareit.util.Entity;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
+import ru.practicum.shareit.booking.validation.EndDateAfterStartDate;
+import ru.practicum.shareit.booking.validation.OnCreate;
+
 /**
- * DTO для класса Booking <p>
- * ТЗ-13 <p>
- * @implNote expect SP-14 specs for more details
+ * DTO для класса сущности запроса на бронирование
  */
-@Getter
 @Builder
-@EqualsAndHashCode(callSuper = false)
-public class BookingDto extends Entity {
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
+@EndDateAfterStartDate(groups = {OnCreate.class})
+public class BookingDto {
 
     @Setter
     private Long id;
 
-    @NotNull(message = "booking start time is null")
+    @FutureOrPresent(groups = {OnCreate.class})
     private LocalDateTime start;
 
-    @NotNull(message = "booking end time is null")
+    @Future(groups = {OnCreate.class})
     private LocalDateTime end;
-
-    private LocalDateTime created;
 
     /**
      * идентификатор вещи для шаринга - существующий в ShareIt Item#id
      * @implNote передача в заголовке HTTP-запроса. уточнение в следующих спринта
      */
+    @NotNull(groups = OnCreate.class)
     private Long itemId;
-
-    /**
-     * идентификатор пользователя-заказчика - существующий в ShareIt User#id
-     * @implNote передача в заголовке HTTP-запроса. уточнение в следующих спринтах
-     */
-    private Long bookerId;
-
-    @Builder.Default
-    private BookingStatus status = BookingStatus.WAITING;
 }

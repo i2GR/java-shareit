@@ -2,11 +2,12 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.booking.validation.OnCreate;
+import ru.practicum.shareit.booking.validation.OnUpdate;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -21,17 +22,17 @@ import java.util.List;
 @RequestMapping(path = "/users")
 public class UserController {
 
-    @NonNull
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @PostMapping
-    public UserDto postUser(@RequestBody @Valid UserDto dto) {
+    public UserDto postUser(@RequestBody @Validated(value = OnCreate.class) UserDto dto) {
         log.info("[post] user http-request");
         return userService.addUser(dto);
     }
 
     @PatchMapping("/{userId}")
-    public UserDto patchUser(@PathVariable(name = "userId") Long userId, @RequestBody UserDto dto) {
+    public UserDto patchUser(@PathVariable(name = "userId") Long userId,
+                             @Validated(value = OnUpdate.class) @RequestBody UserDto dto) {
         log.info("[patch] user http-request with id {}", userId);
         return userService.patch(userId, dto);
     }

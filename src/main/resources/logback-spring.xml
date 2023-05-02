@@ -29,7 +29,7 @@
     <logger name ="ru.practicum.shareit.user.UserController" level="debug">
         <appender-ref ref="UserLog"/>
     </logger>
-    <logger name ="ru.practicum.shareit.user.UserService" level="debug">
+    <logger name ="ru.practicum.shareit.user.UserServiceImpl" level="debug">
         <appender-ref ref="UserLog"/>
     </logger>
     <logger name ="ru.practicum.shareit.user.InMemoryUserStorage" level="debug">

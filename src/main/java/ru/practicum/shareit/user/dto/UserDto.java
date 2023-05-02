@@ -1,13 +1,15 @@
 package ru.practicum.shareit.user.dto;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.shareit.util.Entity;
+import ru.practicum.shareit.booking.validation.OnCreate;
+import ru.practicum.shareit.booking.validation.OnUpdate;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 /**
  * DTO для класса User <p>
@@ -15,17 +17,16 @@ import javax.validation.constraints.NotNull;
  */
 @Getter
 @Builder
-public class UserDto extends Entity {
+@EqualsAndHashCode(exclude = {"id"}, callSuper = false)
+public class UserDto {
 
     @Setter
     private Long id;
 
-    @Email(message = "Bad User.email")
-    @NotEmpty(message = "Email cannot be empty")
-    @NotNull(message = "Email cannot be null")
+    @Email(message = "Bad User.email", groups = {OnCreate.class, OnUpdate.class}) //если передался, то д. соответствовать
+    @NotEmpty(message = "Email cannot be empty", groups = {OnCreate.class}) //при патче может не передаваться ?
     private String email;
 
-    @NotEmpty(message = "name cannot be empty")
-    @NotNull
+    @NotBlank(message = "name cannot be empty", groups = {OnCreate.class}) //при патче может не передаваться
     private String name;
 }

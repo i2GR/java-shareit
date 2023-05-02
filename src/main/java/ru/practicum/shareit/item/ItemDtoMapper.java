@@ -1,9 +1,6 @@
 package ru.practicum.shareit.item;
 
-import org.mapstruct.InheritConfiguration;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
@@ -17,8 +14,14 @@ public interface ItemDtoMapper {
 
     ItemDto toDto(Item item);
 
-    Item fromDto(ItemDto item);
+    Item fromDto(ItemDto dto);
 
     @InheritConfiguration
-    Item update(ItemDto source, @MappingTarget Item destination);
+    @Mapping(target = "item.name", expression = "java(notNullBlankSource(dto.getName(), item.getName()))")
+    @Mapping(target = "item.description", expression = "java(notNullBlankSource(dto.getDescription(), item.getDescription()))")
+    void update(ItemDto dto, @MappingTarget Item item);
+
+    default String notNullBlankSource(String source, String target) {
+        return source != null && !source.isBlank() ? source : target;
+    }
 }

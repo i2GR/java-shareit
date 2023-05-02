@@ -4,7 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +20,16 @@ class BookingDtoMapperTest {
     private final LocalDateTime start = LocalDateTime.MIN;
     private final LocalDateTime end = LocalDateTime.MAX;
 
+    private User booker = User.builder().id(1L).name("owner").email("owner@host.dom").build();
+
+    private final Item item = Item.builder()
+            .id(1L)
+            .ownerId(1L)
+            .name("item")
+            .description("description")
+            .available(true)
+            .build();
+
     @Autowired
     private BookingDtoMapper mapper;
 
@@ -24,16 +38,17 @@ class BookingDtoMapperTest {
         Booking booking = Booking.builder()
                 .id(1L)
                 .start(start).end(end)
-                .itemId(1L)
-                .bookerId(1L).build();
+                .item(item)
+                .booker(booker)
+                .build();
         //when
-        BookingDto bookingDto = mapper.toDto(booking);
+        BookingResponseDto bookingResponseDto = mapper.toDto(booking);
         //then
-        assertNotNull(bookingDto);
-        assertEquals(start, bookingDto.getStart());
-        assertEquals(end, bookingDto.getEnd());
-        assertEquals(1L, bookingDto.getItemId());
-        assertEquals(1L, bookingDto.getBookerId());
+        assertNotNull(bookingResponseDto);
+        assertEquals(start, bookingResponseDto.getStart());
+        assertEquals(end,bookingResponseDto.getEnd());
+        assertEquals(1L, bookingResponseDto.getItem().getId());
+        assertEquals(1L, bookingResponseDto.getBooker().getId());
     }
 
     @Test
@@ -41,15 +56,15 @@ class BookingDtoMapperTest {
         BookingDto bookingDto = BookingDto.builder()
                 .start(start).end(end)
                 .itemId(1L)
-                .bookerId(1L).build();
+                .build();
         //when
-        Booking booking = mapper.fromDto(bookingDto);
+        Booking booking = mapper.fromDto(bookingDto, booker, item);
         //then
         assertNotNull(booking);
         assertEquals(start, booking.getStart());
         assertEquals(end, booking.getEnd());
         assertEquals(1L, bookingDto.getItemId());
-        assertEquals(1L, bookingDto.getBookerId());
+        assertEquals(BookingStatus.WAITING, booking.getStatus());
     }
 
     @Test
@@ -57,18 +72,18 @@ class BookingDtoMapperTest {
         Booking bookingToUpdateStart = Booking.builder()
                 .id(1L)
                 .start(start).end(end)
-                .itemId(1L)
-                .bookerId(1L).build();
+                .item(item)
+                .build();
         Booking bookingToUpdateEnd = Booking.builder()
                 .id(1L)
                 .start(start).end(end)
-                .itemId(1L)
-                .bookerId(1L).build();
-        Booking bookingToUpdateitemId = Booking.builder()
+                .item(item)
+                .build();
+        Booking bookingToUpdateItemId = Booking.builder()
                 .id(1L)
                 .start(start).end(end)
-                .itemId(1L)
-                .bookerId(1L).build();
+                .item(item)
+                .build();
         LocalDateTime instance = LocalDateTime.now();
         BookingDto dtoUpdateStart = BookingDto.builder().start(instance).build();
         BookingDto dtoUpdateEnd = BookingDto.builder().end(instance).build();
@@ -76,10 +91,10 @@ class BookingDtoMapperTest {
         //when
         mapper.update(dtoUpdateStart, bookingToUpdateStart);
         mapper.update(dtoUpdateEnd, bookingToUpdateEnd);
-        mapper.update(dtoUpdateItemId, bookingToUpdateitemId);
+        mapper.update(dtoUpdateItemId, bookingToUpdateItemId);
         //then
         assertEquals(instance, bookingToUpdateStart.getStart());
         assertEquals(instance, bookingToUpdateEnd.getEnd());
-        assertEquals(2L, bookingToUpdateitemId.getItemId());
+        assertEquals(1L, bookingToUpdateItemId.getItem().getId());
     }
 }

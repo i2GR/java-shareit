@@ -1,13 +1,29 @@
 package ru.practicum.shareit.item;
 
-import ru.practicum.shareit.util.Repository;
-import ru.practicum.shareit.util.Search;
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import ru.practicum.shareit.item.model.Item;
 
+import java.util.List;
+
 /**
- * интерфейс-маркер для in-memory репозитория вещей <p>
- * ТЗ-13 <p>
- * CRUD-операции, метод поиска
+ * интерфейс для Jpa-репозитория вещей
  */
-public interface ItemRepository extends Repository<Item>, Search<Item> {
+public interface ItemRepository extends JpaRepository<Item, Long> {
+
+    /**
+     * метод поиска <b>только доступных</b> вещей по имени или описанию
+     * @param queryInName строка запроса по названию
+     * @param queryInDescr эквивалентная строка запроса по описанию
+     * @return список List
+     */
+    List<Item> findDistinctByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(String queryInName, String queryInDescr);
+
+    /**
+     * Поиск всех вещей по идентификатору владельца
+     * @param ownerId идентификатор пользователя-владельца вещи
+     * @return список List
+     */
+    List<Item> findByOwnerIdEquals(Long ownerId);
+
 }

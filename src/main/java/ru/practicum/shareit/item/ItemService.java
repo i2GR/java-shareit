@@ -1,140 +1,72 @@
 package ru.practicum.shareit.item;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.ForbiddenException;
-import ru.practicum.shareit.exception.ServiceException;
-import ru.practicum.shareit.exception.StorageErrorException;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentResponseDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserRepository;
-import static ru.practicum.shareit.util.Constants.SUCCESS_DELETE_MESSAGE;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * сервис-слой для обработки данных вещах для шаринга <p>
- * ТЗ-13
+ * интерфейс сервис-слой для обработки данных о вещах для шаринга <p>
+ * ТЗ-13 <p>
+ * CRUD-функционал, метод поиска
  */
-@Slf4j
-@Service
-@RequiredArgsConstructor
-public class ItemService implements ItemServing {
-
-    private final ItemDtoMapper itemMapper;
-
-    @NonNull
-    private final ItemRepository itemStorage;
-
-    @NonNull
-    private final UserRepository userStorage;
-
-    @Override
-    public ItemDto addItem(Long ownerId, ItemDto dto) {
-        Item item = itemMapper.fromDto(dto);
-        assignItemWithOwner(ownerId, item);
-        Item created = itemStorage.create(item).orElseThrow(
-                                                    () -> {
-                                                        log.info("Service error creating Item");
-                                                        throw new StorageErrorException("Service error creating Item"); }
-                                                    );
-        return itemMapper.toDto(created);
-    }
-
-    @Override
-    public ItemDto patch(Long ownerId, Long itemId, ItemDto dto) {
-        Item item = itemStorage.readById(itemId).orElseThrow(
-                                                     () -> {
-                                                         log.info("Service error reading Item#id {}", itemId);
-                                                         throw new StorageErrorException(
-                                                         String.format("Service error reading Item#id %d", itemId)); }
-                                                     );
-        checkUserAccess(ownerId, item.getOwnerId());
-        itemMapper.update(dto, item);
-        itemStorage.update(item).orElseThrow(
-                                                    () -> {
-                                                        log.info("Service error patching Item");
-                                                        throw new StorageErrorException("Service error creating Item"); }
-                                                    );
-        return itemMapper.toDto(item);
-    }
-
-    @Override
-    public ItemDto getById(Long itemId) {
-        Item item = itemStorage.readById(itemId).orElseThrow(
-                                                    () -> {
-                                                        log.info("Service error reading Item#id {}", itemId);
-                                                        throw new StorageErrorException(
-                                                        String.format("Service error reading Item#id %d", itemId)); }
-        );
-        return itemMapper.toDto(item);
-    }
-
-    @Override
-    public List<ItemDto> getAllByUserId(Long userId) {
-        //реализация для in-memory репозитория
-        return itemStorage.readAll().stream()
-                                    .filter(i -> i.getOwnerId().equals(userId))
-                                    .map(itemMapper::toDto)
-                                    .collect(Collectors.toList());
-    }
-
-    @Override
-    public String deleteById(Long ownerId, Long itemId) {
-        Item item = itemStorage.readById(itemId).orElseThrow(
-                                                    () -> {
-                                                        log.info("Service error reading Item#id {}", itemId);
-                                                        throw new StorageErrorException(
-                                                        String.format("Service error reading Item#id %d", itemId)); }
-        );
-        checkUserAccess(ownerId, item.getOwnerId());
-        itemStorage.delete(itemId).orElseThrow(
-                                                    () -> {
-                                                        log.info("Service error deleting Item#id {}: null received",
-                                                            itemId);
-                                                        throw new ServiceException(
-                                                        String.format("received null deleting Item#id %d", itemId)); }
-        );
-        return SUCCESS_DELETE_MESSAGE;
-    }
-
-    @Override
-    public List<ItemDto> search(String query) {
-        return itemStorage.findByQuery(query).stream()
-                                            .map(itemMapper::toDto)
-                                            .collect(Collectors.toList());
-    }
+public interface ItemService {
 
     /**
-     * ТЗ-13
-     * <p> вспомогательный метод проверки принадлежности вещи пользователю
-     * <p> реализация для in-memory репозитория
-     * <p> при реалзиации репозитория в БД проверка может быть осуществлена на слое DAO запросом к БД
-     *
-     * @param ownerId идентификатор пользователя владельца
-     * @param item обрабатываемы в Service-слое Item-объект
+     * добавление вещи
+     * @param ownerId идентификатор пользователя, которому принадлежит вещь
+     * @return Экз. DTO для добавленного пользователя
      */
-    private void assignItemWithOwner(Long ownerId, Item item) {
-        userStorage.readById(ownerId); //если пользователь не найден -> NotFoundException
-        item.setOwnerId(ownerId);
-    }
+    ItemDto addItem(Long ownerId, ItemDto itemDto);
 
     /**
-     * ТЗ-13
-     * <p> вспомогательный метод проверки принадлежности вещи пользователю
-     * <p> реализация для in-memory репозитория
-     * <p> при реалзиации репозитория в БД проверка может быть осуществлена на слое DAO запросом к БД
-     *
-     * @param ownerId идентификатор пользователя владельца
-     * @param itemOwnerId идентификатор пользователя-владельца Item-объекта из репозитория
+     * частичное изменение данных о вещи
+     * @param ownerId идентификатор пользователя, которому принадлежит вещь
+     * @param itemId идентификатор сохраненной вещи
+     * @param dto DTO для вещи <p>
+     * частично заполненные поля
+     * @return Экз. DTO для добавленного пользователя
      */
-    private void checkUserAccess(Long ownerId, Long itemOwnerId) {
-        if (!ownerId.equals(itemOwnerId)) {
-            log.info("Error: requesting user not match item owner");
-            throw new ForbiddenException("requesting user not match item owner");
-        }
-    }
+    ItemDto patch(Long ownerId, Long itemId, ItemDto dto);
+
+    /**
+     * получение DTO для вещи из хранилища
+     * @param userId идентификатор пользователя, сделавшего Http-запрос
+     * @param itemId идентификатор сохраненной вещи
+     * @return экз. DTO для вещи из хранилища
+     */
+    ItemResponseDto getByOwnerById(Long userId, Long itemId);
+
+    /**
+     * получение списка DTO для всех вещей из хранилища
+     * @return список DTO
+     */
+    List<ItemResponseDto> getAllByUserId(Long userId);
+
+    /**
+     * удаление пользователя из хранилища <p>
+     * @implNote если вещь не принадлежит пользователю, она не должна быть удалена
+     * @param ownerId идентификатор пользователя, которому принадлежит вещь
+     * @param itemId идентификатор сохраненной вещи
+     * @return DTO для пользователя (удаленный пользователь)
+     */
+    String deleteById(Long ownerId, Long itemId);
+
+    /**
+     * поиск вещей по текстовому запросу
+     * @param query строковое представление запроса
+     * @return список DTO, для которых было найдено совпадение
+     */
+    List<ItemDto> search(String query);
+
+    /**
+     * Добавление комментария к вещи
+     * @param authorId идентификатор владельца
+     * @param itemId идентификатор вещи для шаринга
+     * @param dto DTO-класс сущности вещи для шаринга
+     * @return DTO-класс сущности вещи для шаринга, с сохраненными данными в приложении
+     */
+    CommentResponseDto addComment(Long authorId, Long itemId, CommentDto dto);
 }

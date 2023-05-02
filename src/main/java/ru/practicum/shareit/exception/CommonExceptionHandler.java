@@ -9,12 +9,24 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Обработчик исключений, определененных в ShareIt
  */
 @Slf4j
 @RestControllerAdvice
 public class CommonExceptionHandler {
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErrorResponse> handleThrowable(Throwable exception) {
+        log.info("internal server error 500 {}", exception.getMessage(), exception);
+        ErrorResponse error = new ErrorResponse(exception.getMessage(), listTrace(exception));
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     /**
      * обработка исключения валидации параметров передаваемых в ендпойнты (HTTP-код 400)
@@ -26,7 +38,7 @@ public class CommonExceptionHandler {
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException exception) {
         log.info("Bad request");
-        ErrorResponse error = new ErrorResponse("API validation error", "bad request body");
+        ErrorResponse error = new ErrorResponse(exception.getMessage(), listTrace(exception));
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
@@ -40,7 +52,7 @@ public class CommonExceptionHandler {
     @ResponseBody
     public ErrorResponse handleStorageErrorException(StorageErrorException exception) {
         log.warn("Error operating storage: {}", exception.getMessage());
-        return new ErrorResponse("Error operating storage", exception.getMessage());
+        return new ErrorResponse(exception.getMessage(), listTrace(exception));
     }
 
     /**
@@ -53,7 +65,7 @@ public class CommonExceptionHandler {
     @ResponseBody
     public ErrorResponse handleConflictException(StorageConflictException exception) {
         log.warn("Conflict: {}", exception.getMessage());
-        return new ErrorResponse("Conflict ", exception.getMessage());
+        return new ErrorResponse(exception.getMessage(), listTrace(exception));
     }
 
     /**
@@ -61,12 +73,12 @@ public class CommonExceptionHandler {
      * @param exception исключение
      * @return сообщение об ошибке (ResponseEntity)
      */
-    @ExceptionHandler(ServiceException.class)
+    @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ErrorResponse handleServiceException(ServiceException exception) {
+    public ErrorResponse handleServiceException(BadRequestException exception) {
         log.warn(exception.getMessage());
-        return new ErrorResponse("Service Error",  exception.getMessage());
+        return new ErrorResponse(exception.getMessage(), listTrace(exception));
     }
 
     /**
@@ -79,7 +91,7 @@ public class CommonExceptionHandler {
     @ResponseBody
     public ErrorResponse handleNotFound(NotFoundException exception) {
         log.warn(exception.getMessage());
-        return new ErrorResponse("Not found", exception.getMessage());
+        return new ErrorResponse(exception.getMessage(), listTrace(exception));
     }
 
     /**
@@ -92,6 +104,10 @@ public class CommonExceptionHandler {
     @ResponseBody
     public ErrorResponse handleForbidden(ForbiddenException exception) {
         log.warn(exception.getMessage());
-        return new ErrorResponse("Forbidden", exception.getMessage());
+        return new ErrorResponse(exception.getMessage(), listTrace(exception));
+    }
+
+    List<String> listTrace(Throwable throwable) {
+        return Arrays.stream(throwable.getStackTrace()).map(StackTraceElement::toString).collect(Collectors.toList());
     }
 }

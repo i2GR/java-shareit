@@ -4,9 +4,10 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.shareit.util.Entity;
 
-
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -19,11 +20,12 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @EqualsAndHashCode(callSuper = false)
-public class ItemRequest extends Entity {
+public class ItemRequest {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull (message = "request description is null")
     @NotBlank(message = "item request description cannot be blank")
     private String description;
 
@@ -34,7 +36,7 @@ public class ItemRequest extends Entity {
     private Long requesterId;
 
     /**
-     * идентификатор владельца ,откликнувшегося на запрос - существующий в ShareIt User#id
+     * идентификатор владельца, откликнувшегося на запрос - существующий в ShareIt User#id
      */
     private Long responderId;
 

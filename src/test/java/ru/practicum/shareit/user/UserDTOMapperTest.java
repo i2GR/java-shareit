@@ -1,6 +1,8 @@
 package ru.practicum.shareit.user;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -54,5 +56,25 @@ class UserDTOMapperTest {
 
         assertEquals("email@host.dom", userToUpdateName.getEmail());
         assertEquals("new name", userToUpdateName.getName());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "  "})
+    void updateBlankStringsInDto(String input) {
+        User userToUpdateEmail = User.builder().id(1L).email("email@host.dom").name("name").build();
+        User userToUpdateName = User.builder().id(1L).email("email@host.dom").name("name").build();
+
+        UserDto userDtoBlankEmail = UserDto.builder().email(input).build();
+        UserDto userDtoBlankName = UserDto.builder().name(input).build();
+
+        mapper.update(userDtoBlankEmail, userToUpdateEmail);
+        mapper.update(userDtoBlankName, userToUpdateName);
+
+
+        assertEquals("email@host.dom", userToUpdateEmail.getEmail());
+        assertEquals("name", userToUpdateEmail.getName());
+
+        assertEquals("email@host.dom", userToUpdateName.getEmail());
+        assertEquals("name", userToUpdateName.getName());
     }
 }

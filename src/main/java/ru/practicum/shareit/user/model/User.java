@@ -1,11 +1,12 @@
 package ru.practicum.shareit.user.model;
 
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.shareit.util.Entity;
-
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
@@ -13,15 +14,22 @@ import javax.validation.constraints.NotNull;
  * Model-класс информации о пользователе <p>
  * ТЗ-13
  */
+@Builder
 @Getter
 @Setter
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = {"id"}, callSuper = false)
-public class User extends Entity {
+@Entity
+@Table(name = "users")
+public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Email(message = "Bad User.email")
+    @Column(unique = true)
     private String email;
 
     @NotNull
