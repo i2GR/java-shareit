@@ -46,8 +46,6 @@ class BookingServiceImplTest {
         jdbcTemplate.update("DELETE FROM bookings");
     }
 
-
-
     @Sql(scripts = "/booking.sql")
     @Test
     void addBookingAndGetById() {

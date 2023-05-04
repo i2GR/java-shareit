@@ -1,25 +1,30 @@
 package ru.practicum.shareit.request.model;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import ru.practicum.shareit.booking.validation.OnCreate;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
- * Model-класс информации о заспросе вещи <p>
- * ТЗ-13 <p>
+ * Model-класс информации о запросе вещи <p>
+ * ТЗ-15 <p>
  */
+@Builder
 @Getter
 @Setter
-@Builder
-@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
+@Entity
+@Table(name = "requests")
 public class ItemRequest {
 
     @Id
@@ -27,19 +32,26 @@ public class ItemRequest {
     private Long id;
 
     @NotBlank(message = "item request description cannot be blank")
+    @Column
     private String description;
 
     /**
-     * идентификатор запросившего пользователия - существующий в ShareIt User#id
+     * запросивший пользователь - существующий в ShareIt
      */
-    @NotNull (message = "requester is null")
-    private Long requesterId;
+    @ManyToOne
+    @JoinColumn(name = "requester_id")
+    private User requester;
 
-    /**
-     * идентификатор владельца, откликнувшегося на запрос - существующий в ShareIt User#id
-     */
-    private Long responderId;
+    //TODO 15
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "requests")
+    //@Transient
+    Set<Item> items = new HashSet<>();
 
-    @NotNull (message = "creation time is null")
+    @Column
     private LocalDateTime created;
+
+    public void addItem(Item item) {
+        items.add(item);
+        item.getRequests().add(this);
+    }
 }

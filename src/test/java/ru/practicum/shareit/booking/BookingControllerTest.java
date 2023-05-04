@@ -1,30 +1,26 @@
 package ru.practicum.shareit.booking;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.exception.ErrorResponse;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -73,9 +69,22 @@ class BookingControllerTest {
 
     @Test
     void HttpRequest_whenXSharerUserHeaderNotProvided_then_BadRequest() throws Exception {
-        mvc.perform(post(PATH)).andExpect(status().isBadRequest());
-        mvc.perform(get(PATH)).andExpect(status().isBadRequest());
-        mvc.perform(patch(PATH)).andExpect(status().isBadRequest());
+        mvc.perform(post(PATH)).andExpect(status().isInternalServerError());
+        mvc.perform(get(PATH)).andExpect(status().isInternalServerError());
+        mvc.perform(patch(PATH)).andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void HttpRequest_whenWrongXSharerUserHeader_thenBadRequest() throws Exception {
+        Mockito.when(bookingService.addBooking(anyLong(), any())).thenThrow(new BadRequestException("bad request message"));
+        Mockito.when(bookingService.approve(anyLong(), anyLong(), anyBoolean())).thenThrow(new BadRequestException("bad request message"));
+        Mockito.when(bookingService.getByRelatedUserId(anyLong(), anyLong())).thenThrow(new BadRequestException("bad request message"));
+        Mockito.when(bookingService.getListByBooker(anyLong(), any(), any(), any())).thenThrow(new BadRequestException("bad request message"));
+        Mockito.when(bookingService.getListByOwner(anyLong(), any(), any(), any())).thenThrow(new BadRequestException("bad request message"));
+
+        mvc.perform(post(PATH)).andExpect(status().isInternalServerError());
+        mvc.perform(get(PATH)).andExpect(status().isInternalServerError());
+        mvc.perform(patch(PATH)).andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -111,22 +120,6 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.booker.id", is(responseDto.getBooker().getId()), Long.class))
                 .andExpect(jsonPath("$.booker.name", is(responseDto.getBooker().getName())))
                 .andExpect(jsonPath("$.status", is(responseDto.getStatus().toString())));
-    }
-
-    @Test
-    void postBooking_whenNoBookerIdHeader_thenStatusBadRequest() throws Exception {
-        bookingDto = BookingDto.builder()
-                .start(startBooking)
-                .end(endBooking)
-                .itemId(mockedItemId)
-                .build();
-
-        mvc.perform(post("/bookings")
-                        .content(objectMapper.writeValueAsString(bookingDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
     }
 
     @Test

@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
@@ -16,6 +17,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -56,6 +59,8 @@ public class ItemServiceImpl implements ItemService {
 
     private final UserRepository userStorage;
 
+    private final ItemRequestRepository requestStorage;
+
 
     /**
      * добавление вещи
@@ -68,6 +73,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto addItem(Long ownerId, ItemDto dto) {
         Item item = itemMapper.fromDto(dto);
         assignItemWithOwner(ownerId, item);
+        assignRequestToItem(dto.getRequestId(), item);
         Item created = itemStorage.save(item);
         return itemMapper.toDto(created);
     }
@@ -128,9 +134,10 @@ public class ItemServiceImpl implements ItemService {
      *     (запросы на бронирование, комментарии)
      */
     @Override
-    public List<ItemResponseDto> getAllByUserId(Long ownerId) {
-        List<Item> items = itemStorage.findByOwnerIdEquals(ownerId);
-        List<Booking> bookings = bookingStorage.findByItem_OwnerIdOrderByStartDesc(ownerId);
+    public List<ItemResponseDto> getAllByUserId(Long from, Integer size, Long ownerId) {
+        List<Item> items = itemStorage.findByOwnerIdEquals(ownerId, PageRequest.of((int) (from / size), size));
+        List<Booking> bookings = bookingStorage.findByItem_OwnerIdOrderByStartDesc(
+                ownerId, PageRequest.of((int) (from / size), size));
         LocalDateTime moment = LocalDateTime.now();
         Map<Long, List<CommentResponseDto>> itemIdToCommentDtoList = commentStorage.findByItem_OwnerIdEquals(ownerId)
                 .stream()
@@ -162,17 +169,21 @@ public class ItemServiceImpl implements ItemService {
     /**
      * поиск вещи по текстовому запросу в названии или описании вещи
      * @param query строковое представление запроса
+     * @param from индекс первого элемента (нумерация начинается с 0)
+     * @param size количество элементов для отображения
      * @return список вещей: DTO-представление для класса Item <b>без</b>дополнительных полей
      */
     @Override
-    public List<ItemDto> search(String query) {
+    public List<ItemDto> search(String query, Long from, Integer size) {
         if (query.isBlank()) {
             log.info("search query is blank");
             return List.of();
         }
-        return itemStorage.findDistinctByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(query, query).stream()
-                                            .map(itemMapper::toDto)
-                                            .collect(toList());
+        return itemStorage.findDistinctByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(query, query,
+                        PageRequest.of((int) (from / size), size))
+                            .stream()
+                            .map(itemMapper::toDto)
+                            .collect(toList());
     }
 
     /**
@@ -205,10 +216,8 @@ public class ItemServiceImpl implements ItemService {
 
     /**
      * ТЗ-13
-     * <p> вспомогательный метод проверки принадлежности вещи пользователю
-     * <p> реализация для in-memory репозитория
-     * <p> при реализации репозитория в БД проверка может быть осуществлена на слое DAO запросом к БД
-     *
+     *  вспомогательный метод проверки принадлежности вещи пользователю <p>
+     *  при реализации репозитория в БД проверка может быть осуществлена на слое DAO запросом к БД <p>
      * @param ownerId идентификатор пользователя владельца
      * @param item обрабатываемы в Service-слое Item-объект
      */
@@ -275,5 +284,24 @@ public class ItemServiceImpl implements ItemService {
                 .filter(b -> b.getStart().isAfter(moment))
                 .collect(toMap(b -> b.getItem().getId(), identity(), (o, n) -> n));
         items.forEach(item -> item.setNextBooking(itemIdMapsNextBooking.get(item.getId())));
+    }
+
+    /**
+     * вспомогательный метод привязки вещи пользователю к запросу (ItemRequest) <p>
+     * ТЗ-15 <p>
+     * @param requestId идентификатор запроса на вещь, в ответ на который создается вещь
+     * @param item обрабатываемый в Service-слое Item-объект
+     */
+    private void assignRequestToItem(Long requestId, Item item) {
+        if (requestId == null) {
+            log.info("RequestId is null");
+            return;
+        }
+        ItemRequest request = requestStorage.findById(requestId).orElse(null);
+        if (request == null) {
+            log.info("Item-Request with Id {} not found", requestId);
+            return;
+        }
+        item.setRequest(request);
     }
 }

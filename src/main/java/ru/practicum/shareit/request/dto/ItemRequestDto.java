@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import ru.practicum.shareit.booking.validation.OnCreate;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -19,17 +20,16 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = false)
 public class ItemRequestDto {
 
-    @Setter
+    //@Setter
     private Long id;
 
-    @NotBlank(message = "request description name cannot be blank")
+    @NotBlank(groups = {OnCreate.class},
+            message = "request description name cannot be blank")
     private String description;
 
-    @NotNull (message = "requester is null")
-    private Long requesterId;
+    //@NotNull (message = "requester is null")
+    //private Long requesterId;
 
-    private Long responderId;
-
-    @NotNull (message = "creation time is null")
-    private LocalDateTime created;
+    //@NotNull (message = "creation time is null")
+    //private LocalDateTime created;
 }

@@ -16,8 +16,12 @@ import java.util.List;
         uses = {CommentDtoMapper.class})
 public interface ItemResponseDtoMapper {
 
+    @Mapping(target = "requestId", source ="item.request.id", defaultExpression = "java(null)")
+    //@Mapping(target = "requestId", expression = "java(item.getRequest() == null ? null : item.getRequest().getId())")
     ItemResponseDto toDto(Item item);
 
+    @Mapping(target = "requestId", source ="item.request.id", defaultExpression = "java(null)")
+    //@Mapping(target = "requestId", expression = "java(item.getRequest() == null ? null : item.getRequest().getId())")
     ItemResponseDto toDtoWithComments(Item item, List<Comment> comments);
 
     @Mapping(target = "bookerId", source = "booking.booker.id")

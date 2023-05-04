@@ -31,6 +31,8 @@ public class ItemResponseDto {
     @Setter
     private List<CommentResponseDto> comments;
 
+    private Long requestId;
+
     @Builder
     @Getter
     public static class BookingDto {

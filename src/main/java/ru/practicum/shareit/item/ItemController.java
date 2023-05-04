@@ -10,6 +10,9 @@ import ru.practicum.shareit.item.dto.CommentResponseDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+
 import static ru.practicum.shareit.util.Constants.SHARER_USER_HTTP_HEADER;
 
 import java.util.List;
@@ -74,9 +77,11 @@ public class ItemController {
      * @return Список с DTO-классами сущностей вещей для шаринга, с сохраненными данными в приложении
      */
     @GetMapping
-    public List<ItemResponseDto> getAllByUserId(@RequestHeader(value = SHARER_USER_HTTP_HEADER) Long ownerId) {
+    public List<ItemResponseDto> getAllByUserId(@RequestHeader(value = SHARER_USER_HTTP_HEADER) Long ownerId,
+                                                @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Long from,
+                                                @RequestParam(name = "size", defaultValue = "20") @Positive Integer size) {
         log.info("[get] all items http-request with userId {}", ownerId);
-        return itemService.getAllByUserId(ownerId);
+        return itemService.getAllByUserId(from, size, ownerId);
     }
 
     /**
@@ -98,9 +103,11 @@ public class ItemController {
      * @return Список с DTO-классами сущностей вещей для шаринга, удовлетворяющих критериям поиска
      */
     @GetMapping("/search")
-    public List<ItemDto> searchItems(@RequestParam(name = "text") String query) {
+    public List<ItemDto> searchItems(@RequestParam(name = "text") String query,
+                                     @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Long from,
+                                     @RequestParam(name = "size", defaultValue = "20") @Positive Integer size) {
         log.info("Search [get] items http-request of query {}", query);
-        return itemService.search(query);
+        return itemService.search(query, from, size);
     }
 
     /**

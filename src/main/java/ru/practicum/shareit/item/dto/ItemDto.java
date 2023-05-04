@@ -12,7 +12,8 @@ import javax.validation.constraints.NotNull;
  * DTO для класса Item <p>
  * ТЗ-13
  * используется также для возврата для http после добавления вещи
- * <b>не</b>содержит дополнительные поля с информацией о запрсоах на бронирование, комментариях
+ * <b>не</b>содержит дополнительные поля с информацией о запросах на бронирование, комментариях
+ * ТЗ-15 поле requestId - id запроса, в ответ на который создаётся нужная вещь
  */
 @Getter
 @Builder
@@ -29,4 +30,6 @@ public class ItemDto {
 
     @NotNull(message = "available cannot be null", groups = {OnCreate.class})
     private Boolean available;
+
+    private Long requestId;
 }
