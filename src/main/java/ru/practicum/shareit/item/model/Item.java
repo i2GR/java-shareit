@@ -55,20 +55,20 @@ public class Item {
     private ItemRequest request;
 
     //TODO 15
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "item_requests",
-            joinColumns = @JoinColumn(name = "item_id"),
-            inverseJoinColumns = @JoinColumn(name = "request_id"))
-    private Set<ItemRequest> requests = new HashSet<>();
+    //@ManyToMany(fetch = FetchType.EAGER)
+    //@JoinTable(
+    //       name = "item_requests",
+    //        joinColumns = @JoinColumn(name = "item_id"),
+    //        inverseJoinColumns = @JoinColumn(name = "request_id"))
+    //private Set<ItemRequest> requests = new HashSet<>();
 
     @Transient
     private Booking lastBooking;
 
     @Transient
     private Booking nextBooking;
-    public void addItemRequest(ItemRequest itemRequest) {
+/*    public void addItemRequest(ItemRequest itemRequest) {
         requests.add(itemRequest);
         itemRequest.getItems().add(this);
-    }
+    }*/
 }

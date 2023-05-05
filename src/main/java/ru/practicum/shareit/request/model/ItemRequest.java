@@ -43,15 +43,15 @@ public class ItemRequest {
     private User requester;
 
     //TODO 15
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "requests")
+    //@ManyToMany(fetch = FetchType.EAGER, mappedBy = "requests")
     //@Transient
-    Set<Item> items = new HashSet<>();
+    //Set<Item> items = new HashSet<>();
 
     @Column
     private LocalDateTime created;
 
-    public void addItem(Item item) {
+/*    public void addItem(Item item) {
         items.add(item);
         item.getRequests().add(this);
-    }
+    }*/
 }

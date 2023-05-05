@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.shareit.booking.validation.OnCreate;
@@ -15,8 +16,9 @@ import javax.validation.constraints.NotNull;
  * <b>не</b>содержит дополнительные поля с информацией о запросах на бронирование, комментариях
  * ТЗ-15 поле requestId - id запроса, в ответ на который создаётся нужная вещь
  */
-@Getter
 @Builder
+@Getter
+@EqualsAndHashCode
 public class ItemDto {
 
     @Setter

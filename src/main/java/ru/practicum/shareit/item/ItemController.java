@@ -10,6 +10,7 @@ import ru.practicum.shareit.item.dto.CommentResponseDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
@@ -27,6 +28,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
+@Validated
 @RequestMapping(path = "/items")
 public class ItemController {
 
@@ -85,7 +87,7 @@ public class ItemController {
     }
 
     /**
-     * Удаление  вещи для шаринга
+     * Удаление вещи для шаринга
      * @param ownerId идентификатор владельца
      * @param itemId идентификатор вещи для шаринга
      * @return сообщение об удалении

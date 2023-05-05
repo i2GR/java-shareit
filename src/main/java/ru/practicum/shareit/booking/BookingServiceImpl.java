@@ -69,8 +69,8 @@ public class BookingServiceImpl implements BookingService {
                 }
         );
         if (bookerId.equals(item.getOwnerId())) {
-            log.info("Error creating booking");
-            throw new NotFoundException("Error creating booking");
+            log.info("Booker user is item-owner user");
+            throw new NotFoundException("Booker user is item-owner user");
         }
         if (item.getAvailable()) {
             Booking booking = bookingMapper.fromDto(dto, booker, item);
@@ -98,8 +98,8 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponseDto approve(Long ownerId, Long bookingId, Boolean approveState) {
         Booking booking = readById(bookingId);
         if (booking.getStatus() != BookingStatus.WAITING) {
-            log.info("bad request of user {}", ownerId);
-            throw new BadRequestException(format("bad request of user %d", ownerId));
+            log.info("bad status of booking {}", booking.getStatus().toString());
+            throw new BadRequestException(format("bad status of booking %s", booking.getStatus().toString()));
         }
         if (ownerId.equals(booking.getItem().getOwnerId())) {
             booking.setStatus(approveState ? BookingStatus.APPROVED : BookingStatus.REJECTED);
