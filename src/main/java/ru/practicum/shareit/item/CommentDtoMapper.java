@@ -27,5 +27,6 @@ public interface CommentDtoMapper {
     Comment fromDto(CommentDto commentDto, User author, Item item, LocalDateTime created);
 
     @InheritConfiguration
+    @Mapping(target = "id", ignore = true)
     Comment update(CommentDto source, @MappingTarget Comment destination);
 }

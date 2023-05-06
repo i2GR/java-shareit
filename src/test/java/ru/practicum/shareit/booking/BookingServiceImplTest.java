@@ -17,11 +17,13 @@ import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exception.BadRequestException;
+import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.util.Constants;
 
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
@@ -523,6 +525,31 @@ class BookingServiceImplTest {
         assertEquals(response1Dto.getStatus(), list.get(0).getStatus());
         assertEquals(response1Dto.getItem().getName(), list.get(0).getItem().getName());
         assertEquals(response1Dto.getBooker().getName(), list.get(0).getBooker().getName());
+    }
+
+    @Test
+    void deleteById_whenInputOk_thenOk() {
+        //given
+        Mockito.when(bookingStorage.findById(any())).thenReturn(Optional.of(booking1ByUser2));
+        //when
+        String message = bookingService.deleteById(user2.getId(), booking1ByUser2.getId());
+        //then
+        assertEquals(Constants.SUCCESS_DELETE_MESSAGE, message);
+        Mockito.verify(bookingStorage).deleteById(booking1ByUser2.getId());
+    }
+
+    @Test
+    void deleteById_whenUserNotBookingOwner_thenThrowsForbiddenException() {
+        //given
+        Long user1IdNotBookerOwner = 1L;
+        Mockito.when(bookingStorage.findById(any())).thenReturn(Optional.of(booking1ByUser2));
+        //when
+        ForbiddenException fe = assertThrows(ForbiddenException.class,
+                () -> bookingService.deleteById(user1IdNotBookerOwner, booking1ByUser2.getId())
+        );
+        //then
+        assertEquals(format("User with id %d is not related to booking", user1IdNotBookerOwner), fe.getMessage());
+        Mockito.verify(userStorage, never()).deleteById(any());
     }
 
     /**

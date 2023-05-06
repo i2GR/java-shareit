@@ -44,11 +44,32 @@ class BookingDtoMapperTest {
         //when
         BookingResponseDto bookingResponseDto = mapper.toDto(booking);
         //then
+        assertNull(mapper.toDto(null));
         assertNotNull(bookingResponseDto);
         assertEquals(start, bookingResponseDto.getStart());
         assertEquals(end,bookingResponseDto.getEnd());
         assertEquals(1L, bookingResponseDto.getItem().getId());
         assertEquals(1L, bookingResponseDto.getBooker().getId());
+    }
+
+    @Test
+    void fromDto_whenNullArgs_thenNull() {
+        BookingDto bookingDto = BookingDto.builder()
+                .start(start).end(end)
+                .itemId(1L)
+                .build();
+        //when
+        Booking bookingNoBooker = mapper.fromDto(bookingDto, null, item);
+        Booking bookingNoItem = mapper.fromDto(bookingDto, booker, null);
+        //then
+        assertNotNull(bookingNoBooker);
+        assertNotNull(bookingNoItem);
+        assertEquals(start, bookingNoBooker.getStart());
+        assertEquals(start, bookingNoItem.getStart());
+        assertEquals(end, bookingNoBooker.getEnd());
+        assertEquals(end, bookingNoItem.getEnd());
+        assertNull( bookingNoBooker.getBooker());
+        assertNull(bookingNoItem.getItem());
     }
 
     @Test

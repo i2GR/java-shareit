@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.util.Constants;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -214,6 +215,19 @@ class UserControllerTest {
         Mockito.when(userService.getAll()).thenReturn(List.of(userDto));
         //when
         mvc.perform(get(PATH + "/{userId}", userId)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .accept(MediaType.APPLICATION_JSON))
+                //then
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteUser_whenInputOk_thenStatusOk() throws Exception {
+        //given
+        userDto = UserDto.builder().id(userId).name(email).email(email).build();
+        Mockito.when(userService.deleteById(userId)).thenReturn(Constants.SUCCESS_DELETE_MESSAGE);
+        //when
+        mvc.perform(delete(PATH + "/{userId}", userId)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .accept(MediaType.APPLICATION_JSON))
                 //then

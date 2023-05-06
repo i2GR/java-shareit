@@ -22,5 +22,6 @@ public interface BookingDtoMapper {
     BookingResponseDto toDto(Booking booking);
 
     @InheritConfiguration
+    @Mapping(target = "id", ignore = true)
     void update(BookingDto dto, @MappingTarget Booking booking);
 }

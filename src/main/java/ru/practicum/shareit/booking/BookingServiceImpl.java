@@ -203,7 +203,7 @@ public class BookingServiceImpl implements BookingService {
 
     /**
      * удаление бронирования
-     * @param ownerId идентификатор пользователя, которому принадлежит вещь
+     * @param ownerId идентификатор пользователя, который сделал запрос на бронирование
      * @param bookingId идентификатор сохраненной вещи
      * @return сообщение об удалении
      */
@@ -211,8 +211,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public String deleteById(Long ownerId, Long bookingId) {
         Booking booking = readById(bookingId);
-        if (booking.getItem().getOwnerId().equals(ownerId)) {
+        if (booking.getBooker().getId().equals(ownerId)) {
             log.info("deleted booking with id {}", bookingId);
+            bookingStorage.deleteById(bookingId);
             return SUCCESS_DELETE_MESSAGE;
         }
         log.info("User with id {} is not related to booking", ownerId);

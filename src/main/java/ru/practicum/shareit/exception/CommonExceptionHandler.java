@@ -43,32 +43,6 @@ public class CommonExceptionHandler {
     }
 
     /**
-     * обработка исключения ошибки эхранилища с отправкой (HTTP-код 406)
-     * @param exception исключение валидации
-    * @return сообщение об ошибке (ResponseEntity)
-     */
-    @ExceptionHandler(StorageErrorException.class)
-    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    @ResponseBody
-    public ErrorResponse handleStorageErrorException(StorageErrorException exception) {
-        log.warn("Error operating storage: {}", exception.getMessage());
-        return new ErrorResponse(exception.getMessage(), listTrace(exception));
-    }
-
-    /**
-     * обработка исключения клонфликта данных в хранилище (HTTP-код 409)
-     * @param exception исключение валидации
-     * @return сообщение об ошибке (ResponseEntity)
-     */
-    @ExceptionHandler(StorageConflictException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ResponseBody
-    public ErrorResponse handleConflictException(StorageConflictException exception) {
-        log.warn("Conflict: {}", exception.getMessage());
-        return new ErrorResponse(exception.getMessage(), listTrace(exception));
-    }
-
-    /**
      * обработка исключения при получении непредусмотренных данных в сервис-слое (HTTP-код 400)
      * @param exception исключение
      * @return сообщение об ошибке (ResponseEntity)

@@ -189,6 +189,21 @@ class BookingControllerTest {
     }
 
     @Test
+    void postBooking_whenDtoWithoutDates_thenStatusBadRequest() throws Exception {
+        //given
+        setupEntityDtos(null, null);
+        //when
+        mvc.perform(post(PATH)
+                        .content(objectMapper.writeValueAsString(bookingDto))
+                        .header(SHARER_USER_HTTP_HEADER, 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                //then
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void approveBooking_whenOwnerIdIsOkNewStatusApproved_thenStatusOk() throws Exception {
         //given
         long ownerId = 2L;

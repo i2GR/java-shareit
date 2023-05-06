@@ -20,6 +20,7 @@ public interface ItemDtoMapper {
     @InheritConfiguration
     @Mapping(target = "item.name", expression = "java(notNullBlankSource(dto.getName(), item.getName()))")
     @Mapping(target = "item.description", expression = "java(notNullBlankSource(dto.getDescription(), item.getDescription()))")
+    @Mapping(target = "id", ignore = true)
     void update(ItemDto dto, @MappingTarget Item item);
 
     default String notNullBlankSource(String source, String target) {
