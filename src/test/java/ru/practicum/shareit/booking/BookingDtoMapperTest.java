@@ -68,7 +68,7 @@ class BookingDtoMapperTest {
         assertEquals(start, bookingNoItem.getStart());
         assertEquals(end, bookingNoBooker.getEnd());
         assertEquals(end, bookingNoItem.getEnd());
-        assertNull( bookingNoBooker.getBooker());
+        assertNull(bookingNoBooker.getBooker());
         assertNull(bookingNoItem.getItem());
     }
 
