@@ -71,7 +71,7 @@ class BookingServiceImplTest {
     @BeforeEach
     void setup() {
         setupUsersAndItems();
-        setupEntityDtos(DEFAULT_START_DATE, DEFAULT_END_DATE);
+        setupEntityDtos();
     }
 
     @Test
@@ -563,27 +563,25 @@ class BookingServiceImplTest {
 
     /**
      * вспомогательный метод настройки dto для теста
-     * @param start время начала бронирования
-     * @param end время конца бронирования
      */
-    private void setupEntityDtos(LocalDateTime start, LocalDateTime end) {
+    private void setupEntityDtos() {
         booking1Dto = BookingDto.builder()
-                .start(start)
-                .end(end)
+                .start(DEFAULT_START_DATE)
+                .end(DEFAULT_END_DATE)
                 .itemId(1L)
                 .build();
         response1Dto = BookingResponseDto.builder()
                 .id(1L)
-                .start(start)
-                .end(end)
+                .start(DEFAULT_START_DATE)
+                .end(DEFAULT_END_DATE)
                 .status(BookingStatus.WAITING)
                 .item(BookingResponseDto.ItemDto.builder().id(1L).name("item1").build())
                 .booker(BookingResponseDto.BookerDto.builder().id(2L).name("user2").build())
                 .build();
         booking1ByUser2 = Booking.builder()
                 .id(1L)
-                .start(start)
-                .end(end)
+                .start(DEFAULT_START_DATE)
+                .end(DEFAULT_END_DATE)
                 .status(BookingStatus.WAITING)
                 .item(item1)
                 .booker(user2)

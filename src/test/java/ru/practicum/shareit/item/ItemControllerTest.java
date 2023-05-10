@@ -1,8 +1,6 @@
 package ru.practicum.shareit.item;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,7 +22,6 @@ import ru.practicum.shareit.user.model.User;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -35,6 +32,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.util.Constants.DATE_TIME_PATTERN;
 import static ru.practicum.shareit.util.Constants.SHARER_USER_HTTP_HEADER;
 
 @WebMvcTest(controllers = ItemController.class)
@@ -50,7 +48,6 @@ class ItemControllerTest {
 
     private ItemDto itemDto;
     private ItemResponseDto responseDto;
-    private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
     private final long itemId = 1L;
     private final long userId = 1L;
     private final User user = User.builder().id(userId).email("user@host.com").name("user").build();
@@ -59,19 +56,10 @@ class ItemControllerTest {
     private LocalDateTime commentCreated;
     private final String commentText = "comment";
 
-
-    @BeforeEach
+        @BeforeEach
     void setUp() {
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.setDateFormat(new StdDateFormat().withColonInTimeZone(true));
-        commentCreated = LocalDateTime.now().plusMinutes(1).truncatedTo(ChronoUnit.MILLIS);
-        // Без StdDateFormat даты сериализуются в json так, что если последние милли/нано-секунды это нули(нуль), то это отбрасывается.
-        // В тестах нужно представить даты как строки, последние знаки могут быть заполнены нулями
-        // Не нашел пока как это побороть.
-        // Ограничил сериализацию StdDateFormat()
-        // Дополнительно принудительно знак для миллисекунды устанавливается в НЕ нуль
-        if (commentCreated.getNano() / 1_000_000 % 10 == 0) commentCreated = commentCreated.plusNanos(1_000_000);
-        itemDto = ItemDto.builder()
+        commentCreated = LocalDateTime.now();
+            itemDto = ItemDto.builder()
                 .name(itemName)
                 .description(itemDescription)
                 .available(true)
@@ -454,6 +442,7 @@ class ItemControllerTest {
     @Test
     void addComment_whenValidDtoAndUser_thenStatusOk() throws Exception {
         //given
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
         CommentDto commentDto = CommentDto.builder().text(commentText).build();
         CommentResponseDto commentResponseDto = CommentResponseDto.builder()
                 .id(1L)

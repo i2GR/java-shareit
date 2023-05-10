@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
         User user = userStorage.findById(userId).orElseThrow(
                 () -> {
                     log.info("User#id {} not found", userId);
-                    throw new NotFoundException(format("User#id %d not found", userId));
+                    return new NotFoundException(format("User#id %d not found", userId));
                 }
         );
         userMapper.update(dto, user);
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
         User user = userStorage.findById(userId).orElseThrow(
                 () -> {
                     log.info("User#id {} not found", userId);
-                    throw new NotFoundException(format("User#id %d not found", userId));
+                    return new NotFoundException(format("User#id %d not found", userId));
                 }
         );
         return userMapper.toDto(user);

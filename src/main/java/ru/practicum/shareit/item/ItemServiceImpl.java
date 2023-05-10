@@ -118,9 +118,9 @@ public class ItemServiceImpl implements ItemService {
                     BookingStatus.APPROVED).orElse(null);
             item.setNextBooking(next);
         }
-        List<CommentResponseDto> commentResponseDtoList = commentStorage.findByItem_Id(itemId)
+        List<ItemResponseDto.CommentResponseDto> commentResponseDtoList = commentStorage.findByItem_Id(itemId)
                 .stream()
-                .map(commentMapper::toDto)
+                .map(commentMapper::toNestedDto)
                 .collect(Collectors.toList());
         ItemResponseDto itemDto = itemResponseMapper.toDto(item);
         itemDto.setComments(commentResponseDtoList);
@@ -139,9 +139,9 @@ public class ItemServiceImpl implements ItemService {
         List<Booking> bookings = bookingStorage.findByItem_OwnerIdOrderByStartDesc(
                 ownerId, PageRequest.of((int) (from / size), size));
         LocalDateTime moment = LocalDateTime.now();
-        Map<Long, List<CommentResponseDto>> itemIdToCommentDtoList = commentStorage.findByItem_OwnerIdEquals(ownerId)
+        Map<Long, List<ItemResponseDto.CommentResponseDto>> itemIdToCommentDtoList = commentStorage.findByItem_OwnerIdEquals(ownerId)
                 .stream()
-                .collect(groupingBy(comment -> comment.getItem().getId(), mapping(commentMapper::toDto, toList())));
+                .collect(groupingBy(comment -> comment.getItem().getId(), mapping(commentMapper::toNestedDto, toList())));
         setLastBookingsToItems(items, bookings, moment);
         setNextBookingsToItems(items, bookings, moment);
         return items.stream()
@@ -204,7 +204,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(
                         () -> {
                             log.info("Booking by user {} of Item {} not exists", authorId, itemId);
-                            throw new BadRequestException("Booking by user of Item not exists");
+                            return new BadRequestException("Booking by user of Item not exists");
                         }
         );
         Item item = booking.getItem();
@@ -225,7 +225,7 @@ public class ItemServiceImpl implements ItemService {
         userStorage.findById(ownerId).orElseThrow(
                     () -> {
                         log.info("User with Id {} not found", ownerId);
-                        throw new NotFoundException(format("User with Id %d not found", ownerId));
+                        return new NotFoundException(format("User with Id %d not found", ownerId));
                     }
         );
         item.setOwnerId(ownerId);
@@ -253,7 +253,7 @@ public class ItemServiceImpl implements ItemService {
         return itemStorage.findById(itemId).orElseThrow(
                 () -> {
                     log.info("Item with Id {} not found", itemId);
-                    throw new NotFoundException(String.format("Item with Id %d not found", itemId));
+                    return new NotFoundException(String.format("Item with Id %d not found", itemId));
                 }
         );
     }

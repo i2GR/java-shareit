@@ -48,14 +48,15 @@ class ItemRequestServiceImplTest {
     @MockBean
     private final ItemRepository itemStorage;
 
+    private static final Long VALUE_ID_1 = 1L;
+
     private User user2;
 
-    private final Long user1Id = 1L;
+    private final Long user1Id = VALUE_ID_1;
     private final Long user2Id = 2L;
-    private final Long item1Id = 1L;
     private Item item1;
     private ItemRequestDto requestByUser2Dto;
-    private final Long requestByUser2Id = 1L;
+    private final Long requestByUser2Id = VALUE_ID_1;
 
     private ItemRequest requestByUser2;
     private LocalDateTime currentTime;
@@ -179,7 +180,7 @@ class ItemRequestServiceImplTest {
                 () ->
                         requestService.getRequestById(requestByUser2Id, user2Id)
         );
-        //thend
+        //then
         assertEquals(format("item-request with id %d not found", requestByUser2Id), nfe.getMessage());
         Mockito.verify(userStorage).findById(anyLong());
         Mockito.verify(requestStorage).findById(anyLong());
@@ -202,7 +203,7 @@ class ItemRequestServiceImplTest {
                 .id(requestByUser2Id)
                 .build();
         item1 = Item.builder()
-                .id(item1Id)
+                .id(VALUE_ID_1)
                 .ownerId(user1Id)
                 .name("item1")
                 .description("description1")

@@ -1,8 +1,6 @@
 package ru.practicum.shareit.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,7 +21,7 @@ import ru.practicum.shareit.user.UserRepository;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -34,6 +32,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.util.Constants.DATE_TIME_PATTERN;
 import static ru.practicum.shareit.util.Constants.SHARER_USER_HTTP_HEADER;
 
 @WebMvcTest(controllers = ItemRequestController.class)
@@ -60,19 +59,10 @@ class ItemRequestControllerTest {
 
     private ItemRequestReplyDto itemRequestReplyDto;
 
-    LocalDateTime created;
+    LocalDateTime created = LocalDateTime.now();
 
     @BeforeEach
     void setup() {
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.setDateFormat(new StdDateFormat().withColonInTimeZone(true));
-        created = LocalDateTime.now().plusMinutes(1).truncatedTo(ChronoUnit.MILLIS);
-        // Без StdDateFormat даты сериализуются в json так, что если последние милли/нано-секунды это нули(нуль), то это отбрасывается.
-        // В тестах нужно представить даты как строки, последние знаки могут быть заполнены нулями
-        // Не нашел пока как это побороть.
-        // Ограничил сериализацию StdDateFormat()
-        // Дополнительно принудительно знак для миллисекунды устанавливается в НЕ нуль
-        if (created.getNano() / 1_000_000 % 10 == 0) created = created.plusNanos(1_000_000);
         requestDto = ItemRequestDto.builder()
                 .description("itemRequest")
                 .build();
@@ -112,6 +102,7 @@ class ItemRequestControllerTest {
     void addNewItemRequest_whenInputDataOk_thenStatusOk() throws Exception {
         //given
         Mockito.when(itemRequestService.addRequest(user2Id, requestDto)).thenReturn(itemRequestReplyDto);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
         //when
         mvc.perform(post(PATH)
                         .header(SHARER_USER_HTTP_HEADER, user2Id)
@@ -123,7 +114,7 @@ class ItemRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(itemRequestReplyDto.getId()), Long.class))
                 .andExpect(jsonPath("$.description", is(itemRequestReplyDto.getDescription())))
-                .andExpect(jsonPath("$.created", is(itemRequestReplyDto.getCreated().toString())));
+                .andExpect(jsonPath("$.created", is(itemRequestReplyDto.getCreated().format(dtf))));
     }
 
     @ParameterizedTest
@@ -177,6 +168,7 @@ class ItemRequestControllerTest {
         //given
         Mockito.when(itemRequestService.getAllRequestsByAnotherUsers(anyLong(), anyInt(), anyLong()))
                 .thenReturn(List.of(itemRequestReplyDto));
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
         //when
         mvc.perform(get(PATH + "/all")
                         .header(SHARER_USER_HTTP_HEADER, 1L)
@@ -190,7 +182,7 @@ class ItemRequestControllerTest {
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(itemRequestReplyDto.getId()), Long.class))
                 .andExpect(jsonPath("$[0].description", is(itemRequestReplyDto.getDescription())))
-                .andExpect(jsonPath("$[0].created", is(itemRequestReplyDto.getCreated().toString())));
+                .andExpect(jsonPath("$[0].created", is(itemRequestReplyDto.getCreated().format(dtf))));
         Mockito.verify(itemRequestService).getAllRequestsByAnotherUsers(0L, 20, 1L);
     }
 

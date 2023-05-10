@@ -58,14 +58,14 @@ public class BookingServiceImpl implements BookingService {
         User booker = userStorage.findById(bookerId).orElseThrow(
                 () -> {
                     log.info("User with id {} not found", bookerId);
-                    throw new NotFoundException(format("user with id %d not found", bookerId));
+                    return new NotFoundException(format("user with id %d not found", bookerId));
                 }
         );
         Long itemId = dto.getItemId();
         Item item = itemStorage.findById(itemId).orElseThrow(
                 () -> {
                     log.info("Item with id {} not found", itemId);
-                    throw new NotFoundException(format("item with id %d not found", itemId));
+                    return new NotFoundException(format("item with id %d not found", itemId));
                 }
         );
         if (bookerId.equals(item.getOwnerId())) {
@@ -230,7 +230,7 @@ public class BookingServiceImpl implements BookingService {
         return bookingStorage.findById(bookingId).orElseThrow(
                 () -> {
                     log.info("Booking with Id {} not found", bookingId);
-                    throw new NotFoundException(format("Booking with Id %d not found", bookingId));
+                    return new NotFoundException(format("Booking with Id %d not found", bookingId));
                 }
         );
     }

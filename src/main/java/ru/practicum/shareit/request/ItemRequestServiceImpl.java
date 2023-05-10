@@ -79,7 +79,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return userStorage.findById(userId).orElseThrow(
                 () -> {
                     log.info("User with id {} not found", userId);
-                    throw new NotFoundException(format("user with id %d not found", userId));
+                    return new NotFoundException(format("user with id %d not found", userId));
                 }
         );
     }
@@ -93,7 +93,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return requestStorage.findById(requestId).orElseThrow(
                 () -> {
                     log.info("item-request with id {} not found", requestId);
-                    throw new NotFoundException(format("item-request with id %d not found", requestId));
+                    return new NotFoundException(format("item-request with id %d not found", requestId));
                 }
         );
     }

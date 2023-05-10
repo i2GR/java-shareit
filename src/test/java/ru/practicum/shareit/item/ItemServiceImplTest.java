@@ -71,8 +71,6 @@ class ItemServiceImplTest {
 
     private ItemDto item1Dto;
 
-    private ItemResponseDto response1Dto;
-
     private Comment comment1;
 
     private CommentDto comment1Dto;
@@ -407,12 +405,6 @@ class ItemServiceImplTest {
         item1 = Item.builder().id(item1Id).ownerId(user1Id).name("item1").description("description1").available(true).build();
         item1Dto = ItemDto.builder()
                 .name("item1")
-                .description("description1")
-                .available(true)
-                .build();
-        response1Dto = ItemResponseDto.builder()
-                .id(item1Id)
-                .name("name1")
                 .description("description1")
                 .available(true)
                 .build();

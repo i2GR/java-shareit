@@ -18,12 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class ItemResponseDtoMapperTest {
 
     private Item item;
-    private User booker;
-    private Booking booking;
 
     @BeforeEach
     void setup() {
-        booker = User.builder().id(1L).name("owner").email("owner@host.dom").build();
         item = Item.builder()
                 .id(1L)
                 .ownerId(1L)
@@ -31,13 +28,6 @@ class ItemResponseDtoMapperTest {
                 .description("description")
                 .available(true)
                 .request(ItemRequest.builder().id(1L).build())
-                .build();
-        booking = Booking.builder()
-                .id(1L)
-                .start(LocalDateTime.MIN)
-                .end(LocalDateTime.MAX)
-                .item(item)
-                .booker(booker)
                 .build();
     }
 
@@ -60,6 +50,15 @@ class ItemResponseDtoMapperTest {
 
     @Test
     void map() {
+        //given
+        User booker = User.builder().id(1L).name("owner").email("owner@host.dom").build();
+        Booking booking = Booking.builder()
+                .id(1L)
+                .start(LocalDateTime.MIN)
+                .end(LocalDateTime.MAX)
+                .item(item)
+                .booker(booker)
+                .build();
         //when
         ItemResponseDto.BookingDto bookingDto = mapper.map(booking);
         //then
