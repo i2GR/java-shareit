@@ -9,6 +9,8 @@ import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.validation.OnCreate;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 import static ru.practicum.shareit.util.Constants.SHARER_USER_HTTP_HEADER;
@@ -20,6 +22,7 @@ import static ru.practicum.shareit.util.Constants.SHARER_USER_HTTP_HEADER;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
+@Validated
 @RequestMapping(path = "/bookings")
 public class BookingController {
 
@@ -73,10 +76,12 @@ public class BookingController {
      */
     @GetMapping
     public List<BookingResponseDto> getBookingsByBooker(@RequestHeader(value = SHARER_USER_HTTP_HEADER) Long bookerId,
-                                                        @RequestParam(name = "state", defaultValue = "all") String state) {
+                                                        @RequestParam(name = "state", defaultValue = "all") String state,
+                                                        @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Long from,
+                                                        @RequestParam(name = "size", defaultValue = "20") @Positive Integer size) {
         log.info("[get] Booking http-request of bookings of booker id {}", bookerId);
         BookingStatus status = BookingStatus.fromString(state);
-        return bookingService.getListByBooker(bookerId, status);
+        return bookingService.getListByBooker(bookerId, status, from, size);
     }
 
     /**
@@ -84,9 +89,11 @@ public class BookingController {
      */
     @GetMapping("/owner")
     public List<BookingResponseDto> getBookingByOwner(@RequestHeader(value = SHARER_USER_HTTP_HEADER) Long ownerId,
-                                                      @RequestParam(name = "state", defaultValue = "all") String state) {
+                                                      @RequestParam(name = "state", defaultValue = "all") String state,
+                                                      @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Long from,
+                                                      @RequestParam(name = "size", defaultValue = "20") @Positive Integer size) {
         log.info("[get] Booking http-request of bookings of owner id {}", ownerId);
         BookingStatus status = BookingStatus.fromString(state);
-        return bookingService.getListByOwner(ownerId, status);
+        return bookingService.getListByOwner(ownerId, status, from, size);
     }
 }

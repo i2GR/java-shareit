@@ -19,6 +19,7 @@ public interface UserDtoMapper {
     @InheritConfiguration
     @Mapping(target = "user.email", expression = "java(notNullBlankSource(dto.getEmail(), user.getEmail()))")
     @Mapping(target = "user.name", expression = "java(notNullBlankSource(dto.getName(), user.getName()))")
+    @Mapping(target = "id", ignore = true)
     void update(UserDto dto, @MappingTarget User user);
 
     default String notNullBlankSource(String source, String target) {

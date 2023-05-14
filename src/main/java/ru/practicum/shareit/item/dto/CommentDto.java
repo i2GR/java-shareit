@@ -1,9 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.shareit.booking.validation.OnCreate;
 
 import javax.validation.constraints.NotBlank;
@@ -16,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class CommentDto {
 
     @NotBlank(message = "comment name cannot be blank", groups = {OnCreate.class})

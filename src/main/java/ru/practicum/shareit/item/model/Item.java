@@ -47,7 +47,8 @@ public class Item {
     @NotNull (message = "item available is null")
     private Boolean available;
 
-    @Transient
+    @ManyToOne
+    @JoinColumn(name = "request_id")
     private ItemRequest request;
 
     @Transient

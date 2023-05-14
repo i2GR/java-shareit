@@ -23,7 +23,7 @@ public class UserDto {
     @Setter
     private Long id;
 
-    @Email(message = "Bad User.email", groups = {OnCreate.class, OnUpdate.class}) //если передался, то д. соответствовать
+    @Email(message = "Bad User.email", groups = {OnCreate.class, OnUpdate.class}) //Если передался, то д. соответствовать
     @NotEmpty(message = "Email cannot be empty", groups = {OnCreate.class}) //при патче может не передаваться ?
     private String email;
 

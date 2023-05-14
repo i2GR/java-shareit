@@ -41,9 +41,12 @@ public interface ItemService {
 
     /**
      * получение списка DTO для всех вещей из хранилища
+     * @param from индекс первого элемента (нумерация начинается с 0)
+     * @param size количество элементов для отображения
+     * @param userId идентификатор пользователя-участника "шариэта"
      * @return список DTO
      */
-    List<ItemResponseDto> getAllByUserId(Long userId);
+    List<ItemResponseDto> getAllByUserId(Long from, Integer size, Long userId);
 
     /**
      * удаление пользователя из хранилища <p>
@@ -57,9 +60,10 @@ public interface ItemService {
     /**
      * поиск вещей по текстовому запросу
      * @param query строковое представление запроса
+     *
      * @return список DTO, для которых было найдено совпадение
      */
-    List<ItemDto> search(String query);
+    List<ItemDto> search(String query, Long from, Integer size);
 
     /**
      * Добавление комментария к вещи

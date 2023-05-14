@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"id"}, callSuper = false)
+@EqualsAndHashCode(exclude = {"id"})
 @Entity
 @Table(name = "bookings")
 public class Booking {

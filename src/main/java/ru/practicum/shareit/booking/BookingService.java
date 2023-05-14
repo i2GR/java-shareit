@@ -46,17 +46,21 @@ public interface BookingService {
      * получение списка всех бронирований текущего пользователя
      * @param bookerId идентификатор <b>АВТОРА бронирования</b>
      * @param status необязательный (по умолчанию равен ALL)
+     * @param from индекс первого элемента (нумерация начинается с 0)
+     * @param size количество элементов для отображения
      * @return DTO для запроса на бронирование (включая его статус)
      */
-    List<BookingResponseDto> getListByBooker(Long bookerId, BookingStatus status);
+    List<BookingResponseDto> getListByBooker(Long bookerId, BookingStatus status, Long from, Integer size);
 
     /**
      * получение списка бронирований для всех вещей текущего пользователя
      * @param ownerId идентификатор <b>ВЛАДЕЛЬЦА вещи</b>
      * @param status необязательный (по умолчанию равен ALL)
+     * @param from индекс первого элемента (нумерация начинается с 0)
+     * @param size количество элементов для отображения
      * @return DTO для запроса на бронирование (включая его статус)
      */
-    List<BookingResponseDto> getListByOwner(Long ownerId, BookingStatus status);
+    List<BookingResponseDto> getListByOwner(Long ownerId, BookingStatus status, Long from, Integer size);
 
 
     /**

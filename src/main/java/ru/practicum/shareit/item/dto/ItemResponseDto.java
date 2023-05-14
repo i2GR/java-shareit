@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,6 +32,8 @@ public class ItemResponseDto {
     @Setter
     private List<CommentResponseDto> comments;
 
+    private Long requestId;
+
     @Builder
     @Getter
     public static class BookingDto {
@@ -38,5 +41,15 @@ public class ItemResponseDto {
         LocalDateTime start;
         LocalDateTime end;
         Long bookerId;
+    }
+
+    @Getter
+    @Builder
+    @EqualsAndHashCode
+    public static class CommentResponseDto {
+        private Long id;
+        private String text;
+        private String authorName;
+        private LocalDateTime created;
     }
 }
