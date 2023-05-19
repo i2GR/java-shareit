@@ -135,7 +135,7 @@ public class ItemServiceImpl implements ItemService {
      */
     @Override
     public List<ItemResponseDto> getAllByUserId(Long from, Integer size, Long ownerId) {
-        List<Item> items = itemStorage.findByOwnerIdEquals(ownerId, PageRequest.of((int) (from / size), size));
+        List<Item> items = itemStorage.findByOwnerIdOrderById(ownerId, PageRequest.of((int) (from / size), size));
         List<Booking> bookings = bookingStorage.findByItem_OwnerIdOrderByStartDesc(
                 ownerId, PageRequest.of((int) (from / size), size));
         LocalDateTime moment = LocalDateTime.now();

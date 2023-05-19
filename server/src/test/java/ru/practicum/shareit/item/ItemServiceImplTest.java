@@ -313,7 +313,7 @@ class ItemServiceImplTest {
     @Test
     void getAllByUserId_thenInputOk_thenOkAllDataAttached() {
         //given
-        Mockito.when(itemStorage.findByOwnerIdEquals(anyLong(), any())).thenReturn(List.of(item1));
+        Mockito.when(itemStorage.findByOwnerIdOrderById(anyLong(), any())).thenReturn(List.of(item1));
         Mockito.when(bookingStorage.findByItem_OwnerIdOrderByStartDesc(
                 anyLong(), any())).thenReturn(List.of(booking1Last, booking1Next));
         Mockito.when(commentStorage.findByItem_OwnerIdEquals(anyLong())).thenReturn(List.of(comment1));

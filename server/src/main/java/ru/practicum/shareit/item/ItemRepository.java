@@ -29,7 +29,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
      * @param pageable параметр постраничного вывода
      * @return список List
      */
-    List<Item> findByOwnerIdEquals(Long ownerId, Pageable pageable);
+    List<Item> findByOwnerIdOrderById(Long ownerId, Pageable pageable);
 
     List<Item> findAllByRequest_IdIn(List<Long> id);
 }
