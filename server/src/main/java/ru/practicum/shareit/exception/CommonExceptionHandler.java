@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Обработчик исключений, определененных в ShareIt
+ * Обработчик исключений, определенных в ShareIt
  */
 @Slf4j
 @RestControllerAdvice
@@ -56,7 +56,7 @@ public class CommonExceptionHandler {
     }
 
     /**
-     * обработка исключения : запрошенный элемент не найден (HTTP-кода 404)
+     * обработка исключения: запрошенный элемент не найден (HTTP-кода 404)
      * @param exception исключение
      * @return сообщение об ошибке (ResponseEntity)
      */

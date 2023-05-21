@@ -56,7 +56,7 @@ public class CommonExceptionHandler {
     }
 
     /**
-     * обработка исключения : запрошенный элемент не найден (HTTP-кода 404)
+     * обработка исключения: запрошенный элемент не найден (HTTP-кода 404)
      * @param exception исключение
      * @return сообщение об ошибке (ResponseEntity)
      */

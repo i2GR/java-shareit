@@ -52,9 +52,6 @@ class BookingControllerTest {
     private final long itemId = 1L;
     private final long bookerId = 1L;
     private final long bookingId = 1L;
-    private final String itemName = "item name";
-    private final String bookerName = "booker name";
-
     private LocalDateTime startBooking;
     private LocalDateTime endBooking;
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
@@ -294,8 +291,8 @@ class BookingControllerTest {
                 .start(start)
                 .end(end)
                 .status(BookingStatus.WAITING)
-                .item(BookingResponseDto.ItemDto.builder().id(itemId).name(itemName).build())
-                .booker(BookingResponseDto.BookerDto.builder().id(bookerId).name(bookerName).build())
+                .item(BookingResponseDto.ItemDto.builder().id(itemId).name("item name").build())
+                .booker(BookingResponseDto.BookerDto.builder().id(bookerId).name("booker name").build())
                 .build();
     }
 }

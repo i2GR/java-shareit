@@ -14,7 +14,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
- * Model-класс информации о заспросе вещи <p>
+ * Model-класс информации о запросе вещи <p>
  * ТЗ-13 <p>
  */
 @Builder
