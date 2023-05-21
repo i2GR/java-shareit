@@ -55,8 +55,14 @@ class BookingServiceImplWithDBAddBookingTest {
         long bookerId = 0;
         long ownerId = 0;
         while (set.next()) {
-            if (set.getString("name").equals("booker")) bookerId = set.getLong("id");
-            if (set.getString("name").equals("owner")) ownerId = set.getLong("id");
+            String bookerName = set.getString("name");
+            if (bookerName != null && bookerName.equals("booker")) {
+                bookerId = set.getLong("id");
+            }
+            String ownerName = set.getString("name");
+            if ( ownerName != null && ownerName.equals("owner")) {
+                ownerId = set.getLong("id");
+            }
             count++;
         }
         if (count != 2 && bookerId == 0 && ownerId == 0) fail();

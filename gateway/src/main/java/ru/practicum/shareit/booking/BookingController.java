@@ -50,7 +50,7 @@ public class BookingController {
 
 		log.info("[get] Booking http-request of bookings of owner id {}", ownerId);
 		BookingState status = BookingState.from(state)
-				.orElseThrow(() -> new IllegalArgumentException("Unknown state: " + state));;
+				.orElseThrow(() -> new IllegalArgumentException("Unknown state: " + state));
 		return bookingClient.getBookingsByOwner(ownerId, status, from, size);
 	}
 

@@ -63,12 +63,7 @@ class ItemControllerTest {
     private ItemResponseDto responseDto;
     private final long itemId = 1L;
     private final long userId = 1L;
-
-    private final String email = "user@host.com";
-
     private final String userName = "user";
-
-    //private final User user = User.builder().id(userId).email("user@host.com").name("user").build();
     private final String itemName = "item";
     private final String itemDescription = "description";
     private LocalDateTime commentCreated;

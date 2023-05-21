@@ -15,8 +15,6 @@ import ru.practicum.shareit.validation.OnCreate;
  */
 @Builder
 @Getter
-//@AllArgsConstructor
-//@NoArgsConstructor
 @EndDateAfterStartDate(groups = {OnCreate.class})
 @EqualsAndHashCode(exclude = {"id"})
 public class BookItemRequestDto {

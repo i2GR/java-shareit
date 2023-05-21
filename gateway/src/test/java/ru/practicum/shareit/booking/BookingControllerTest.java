@@ -60,14 +60,14 @@ class BookingControllerTest {
 
     private BookingResponseDto responseDto;
 
-    private final long itemId = 1L;
     private final long bookerId = 1L;
+
     private final long bookingId = 1L;
-    private final String itemName = "item name";
-    private final String bookerName = "booker name";
 
     private LocalDateTime startBooking;
+
     private LocalDateTime endBooking;
+
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     @BeforeEach
@@ -185,7 +185,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void postBooking_whenDtoHasStartDateEqualsEndDates_thenStatusbadRequest() throws Exception {
+    void postBooking_whenDtoHasStartDateEqualsEndDates_thenStatusBadRequest() throws Exception {
         //given
         setupEntityDtos(startBooking, startBooking);
         //when
@@ -451,15 +451,15 @@ class BookingControllerTest {
         bookingDto = BookItemRequestDto.builder()
                 .start(start)
                 .end(end)
-                .itemId(itemId)
+                .itemId(1L)
                 .build();
         responseDto = BookingResponseDto.builder()
                 .id(bookingId)
                 .start(start)
                 .end(end)
                 .status(BookingState.WAITING)
-                .item(BookingResponseDto.ItemDto.builder().id(itemId).name(itemName).build())
-                .booker(BookingResponseDto.BookerDto.builder().id(bookerId).name(bookerName).build())
+                .item(BookingResponseDto.ItemDto.builder().id(1L).name("item name").build())
+                .booker(BookingResponseDto.BookerDto.builder().id(bookerId).name("booker name").build())
                 .build();
     }
 

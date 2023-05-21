@@ -5,7 +5,7 @@ import ru.practicum.shareit.item.model.Comment;
 import java.util.List;
 
 /**
- * интерфейс для Jpa-репозитория коммемнтариев к вещам <p>
+ * интерфейс для Jpa-репозитория комментариев к вещам <p>
  */
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 

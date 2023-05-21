@@ -18,7 +18,7 @@ public interface BookingService {
      * добавление запроса на бронирование
      * @param bookerId идентификатор пользователя, которому принадлежит вещь
      * @param dto DTO запроса на бронирование
-     * @return экз. DTO для добавленного запроса на бронирование
+     * @return Экз. DTO для добавленного запроса на бронирование
      */
     BookingResponseDto addBooking(Long bookerId, BookingDto dto);
 
@@ -69,7 +69,7 @@ public interface BookingService {
      * @implNote ендпойнт не определен в ТЗ-14
      * @param ownerId идентификатор пользователя, которому принадлежит вещь
      * @param itemId идентификатор сохраненной вещи
-     * @return DTO для пользователя (уудаленный пользователь)
+     * @return DTO для пользователя (удаленный пользователь)
      */
     String deleteById(Long ownerId, Long itemId);
 }

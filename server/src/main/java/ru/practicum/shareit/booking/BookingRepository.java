@@ -57,7 +57,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     /**
      * получение списка всех бронирований пользователя-владельца <p>
      * сортировка по убыванию времени начала бронирования
-     * @param ownerId дентификатор пользователя-владельца
+     * @param ownerId идентификатор пользователя-владельца
      * @param pageable параметр постраничного вывода
      * @return список (List)
      */
@@ -132,7 +132,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     /**
      * получение списка бронирований пользователя-владельца <p>
      * выборка по Статусу <p>
-     * сортировка по убывванию времени начала бронирования
+     * сортировка по убыванию времени начала бронирования
      * @param ownerId идентификатор пользователя-заказчика
      * @param status статус для выборки
      * @param pageable параметр постраничного вывода
@@ -146,7 +146,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * @param bookerId идентификатор пользователя-заказчика
      * @param itemId идентификатор вещи
      * @param localDateTime текущий момент времени
-     * @param bookingStatus подтвежденный статус бронирования (передается BookingStatus.APPROVED);
+     * @param bookingStatus подтвержденный статус бронирования (передается BookingStatus.APPROVED);
      * @return бронирование (если найдено)
      */
     Optional<Booking> findFirst1ByBookerIdAndItem_IdAndEndIsBeforeAndStatus(Long bookerId,
@@ -158,7 +158,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * получение списка бронирований пользователя-владельца <p>
      * <b>для выдачи списка ТЕКУЩИХ бронирований</b> <p>
      * выборка по времени начала ДО и времени окончания ПОСЛЕ текущего момента <p>
-     * сортировка по убывванию времени окончания бронирования
+     * сортировка по убыванию времени окончания бронирования
      * @param ownerId идентификатор пользователя-заказчика
      * @param forStart текущий момент
      * @param forEnd текущий момент
