@@ -61,3 +61,6 @@ Java 11, Maven, Spring-Boot 2.7, Hibernate, Postgresql, Lombok, MapStruct, Docke
 #### Рпазвертывание
 Docker-compose в корне проекта
 
+#### Работоспособность приложения:
+Postman тесты в корне проекта (sprint.json)
+
